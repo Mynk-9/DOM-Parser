@@ -32,7 +32,9 @@ namespace xml_parser
         std::queue<XMLnodeUID> vacantUIDs;
         XMLnode deletedNode = XMLnode("", -1, -1);
 
-        // @brief   Generates a new XMLnodeUID.
+        /**
+        * @brief   Generates a new XMLnodeUID.
+        */
         inline XMLnodeUID generateUID()
         {
             ++nodes_counter;
@@ -47,28 +49,41 @@ namespace xml_parser
             return uid;
         }
 
-        // @brief   Checks existance of a node with given UID.
-        // @param   xml_parser::XMLnodeUID node     The node UID.
-        // @return  true or false accordingly
+        /**
+         * @brief   Checks existance of a node with given UID.
+         * @param   xml_parser::XMLnodeUID node     The node UID.
+         * @return  true or false accordingly
+         */
         inline bool checkNodeExistance(XMLnodeUID node)
         {
             return (node < nodes.size() && nodes[node].getUID() != -1);
         }
 
     public:
-        // @brief   Constructor of the tree.
-        // @param   std::string rootName    Name of the root node.
+        /**
+         * @brief   Constructor of empty tree. @a Depriciated @a method - beware
+         *          of undefined behaviour when used this contructor without proper
+         *          knowledge.
+         */
+        XMLtree();
+
+        /**
+         * @brief   Constructor of the tree with an initial root node.
+         * @param   std::string rootName    Name of the root node.
+         */
         XMLtree(std::string root)
         {
             XMLnode _root(root, generateUID(), -1);
             nodes.push_back(_root);
         }
 
-        // @brief   Adds a node within the tree.
-        // @param   xml_parser::XMLnodeUID parent   Parent node UID.
-        // @param   std::string            tagName  Tag name of the node.
-        // @return  XMLnodeID   if node added succefully
-        //          -1          if parent does not exist
+        /**
+         * @brief   Adds a node within the tree.
+         * @param   xml_parser::XMLnodeUID parent   Parent node UID.
+         * @param   std::string            tagName  Tag name of the node.
+         * @return  XMLnodeID   if node added succefully
+         *          -1          if parent does not exist
+         */
         XMLnodeUID addNode(XMLnodeUID parent, std::string tagName)
         {
             if (!checkNodeExistance(parent))
@@ -87,18 +102,22 @@ namespace xml_parser
             return UID;
         }
 
-        // @brief   Returns a reference to the node with given UID.
-        // @params  xml_parser::XMLnodeUID  node    UID of the node.
-        XMLnode &getNode(XMLnodeUID node)
+        /**
+         * @brief   Returns a reference to the node with given UID.
+         * @param  xml_parser::XMLnodeUID  node    UID of the node.
+         */
+        inline XMLnode &getNode(XMLnodeUID node)
         {
             return nodes[node];
         }
 
-        // @brief   Moves a whole subtree from one parent node to another.
-        // @param   xml_parser::XMLnodeUID subtree_root     Subtree root node UID.
-        // @param   xml_parser::XMLnodeUID new_parent       New parent node of the subtree.
-        // @return  true    if moving is successful
-        //          false   if moving is unsuccessful due to problem in input.
+        /**
+         * @brief   Moves a whole subtree from one parent node to another.
+         * @param   xml_parser::XMLnodeUID subtree_root     Subtree root node UID.
+         * @param   xml_parser::XMLnodeUID new_parent       New parent node of the subtree.
+         * @return  true    if moving is successful
+         *          false   if moving is unsuccessful due to problem in input.
+         */
         bool moveSubtree(XMLnodeUID subtree_root, XMLnodeUID new_parent)
         {
             if (!checkNodeExistance(subtree_root) || !checkNodeExistance(new_parent))
@@ -120,17 +139,19 @@ namespace xml_parser
             return true;
         }
 
-        // @brief   Deletes the subtree with the given node as root.
-        //          Deletes the single node if no child nodes present.
-        // @param   xml_parser::XMLnodeUID subtree_root Subtree root node.
+        /**
+         * @brief   Deletes the subtree with the given node as root.
+         *          Deletes the single node if no child nodes present.
+         * @param   xml_parser::XMLnodeUID subtree_root Subtree root node.
+         */
         void deleteSubtree(XMLnodeUID subtree_root)
         {
             if (!checkNodeExistance(subtree_root))
                 return;
 
-            XMLnodeUID current_node = subtree_root;
+            XMLnodeUID current_node; // = subtree_root;
             std::queue<XMLnodeUID> node_queue;
-            node_queue.push(current_node);
+            node_queue.push(subtree_root);
 
             while (!node_queue.empty())
             {
@@ -146,8 +167,10 @@ namespace xml_parser
             }
         }
 
-        // @brief   Returns std::vector of ancestors of the given node.
-        // @param   xml_parser::XMLnodeUID node     The node UID.
+        /**
+         * @brief   Returns std::vector of ancestors of the given node.
+         * @param   xml_parser::XMLnodeUID node     The node UID.
+         */
         std::vector<XMLnodeUID> getAncestorList(XMLnodeUID node)
         {
             std::vector<XMLnodeUID> ancestorList;

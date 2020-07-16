@@ -14,7 +14,7 @@
 
 #include <iostream>
 #include <string>
-#include "XMLtree.hpp"
+#include "XMLparser.hpp"
 
 using namespace std;
 
@@ -30,8 +30,8 @@ int main()
     uid = tree.getNode(uid).getParent(); // now at root node
     uid = tree.addNode(uid, "child2");
     tree.getNode(uid).setAttribute("abc", "xyz");
-
     cout << tree.getNode(uid).getAttribute("abc") << "\n";
+    
 
     return 0;
 }
