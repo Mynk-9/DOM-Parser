@@ -23,7 +23,7 @@
 
 namespace xml_parser
 {
-    // @brief   Node in the XML tree.
+    /// @brief   Node in the XML tree.
     class XMLnode
     {
     private:
@@ -144,6 +144,69 @@ namespace xml_parser
             innerData = node.innerData;
             tagAttributes = node.tagAttributes;
             tagName = node.tagName;
+        }
+    };
+
+    /// @brief Special node for storing text data in an element
+    class XMLInnerDataNode
+    {
+    private:
+        XMLnodeUID uid;
+        XMLnodeUID parent;
+        std::string innerData;
+
+    public:
+        /**
+         * @brief   Constructor for XMLInnerDataNode
+         * @param   std::string             tagName     Name of the tag of the node.
+         * @param   xml_parser::XMLnodeUID  uid         UID of this node.
+         */
+        XMLInnerDataNode(XMLnodeUID uid, XMLnodeUID parent)
+            : uid(uid), parent(parent){};
+
+        /**
+         * @brief   Returns the UID of the node.
+         */
+        inline XMLnodeUID getUID()
+        {
+            return uid;
+        }
+
+        /**
+         * @brief   Sets the inner data - the data between opening and
+         *          closing tags of node.
+         * @param   std::string data    The inner data.
+         */
+        inline void setInnerData(std::string data)
+        {
+            innerData = data;
+        }
+
+        /**
+         * @brief   Returns the parent node UID.
+         */
+        inline XMLnodeUID getParent()
+        {
+            return parent;
+        }
+
+        /**
+         * @brief   Sets a new parent node.
+         * @param   xml_parser::XMLnodeUID new_parent_UID    UID of the new parent node.
+         */
+        inline void setParent(XMLnodeUID new_parent_UID)
+        {
+            parent = new_parent_UID;
+        }
+
+        /**
+         * @brief   Operator overload for =operator
+         */
+        void operator=(const XMLInnerDataNode &node)
+        {
+            uid = node.uid;
+            parent = node.parent;
+            innerData = node.innerData;
         }
     };
 
