@@ -80,6 +80,15 @@ namespace xml_parser
         }
 
         /**
+         * @brief   Gets the ordered map of all the attributes
+         *          with their values.
+         * */
+        inline std::map<std::string, std::string> getAllAttributes()
+        {
+            return tagAttributes;
+        }
+
+        /**
          * @brief   Returns the list of children of the node.
          */
         inline std::list<XMLnodeUID> getChildrenUID()

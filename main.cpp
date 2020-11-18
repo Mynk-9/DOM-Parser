@@ -12,10 +12,17 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
+/*
+THIS FILE IS FOR TESTING PURPOSES ONLY,
+AND DOES NOT CONTRIBUTE TO THE LIBRARY.
+THE CODE HERE IS NOT DOCUMENTED.
+*/
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <list>
+#include <stack>
 
 #include "XMLparser.hpp"
 
@@ -41,18 +48,25 @@ int main()
     string data = "", _data;
     string _tag;
     list<xml_parser::XMLnodeUID> _children;
+    xml_parser::XMLparser parser;
     while (fin >> _data)
         data += _data + " ";
     cout << data << "\n";
-    xml_parser::XMLparser parser(data);
+    parser.loadTree(data);
 
-    uid = 0;
+    uid = 0; // root uid
     _tag = parser.getTree().getNode(uid).getTagName();
     cout << _tag << "\n";
     _children = parser.getTree().getNode(uid).getChildrenUID();
-    for (auto x : _children)
+    while (!_children.empty()) // basic dfs
     {
+        auto x = _children.front();
         cout << parser.getTree().getNode(x).getTagName() << "\n";
+        // cout << "\n\tAttributes:\n";
+        _children.pop_front();
+        auto chldrn = parser.getTree().getNode(x).getChildrenUID();
+        for (auto y = chldrn.rbegin(); y != chldrn.rend(); ++y)
+            _children.push_front(*y);
     }
 
     return 0;
