@@ -62,7 +62,9 @@ int main()
     {
         auto x = _children.front();
         cout << parser.getTree().getNode(x).getTagName() << "\n";
-        // cout << "\n\tAttributes:\n";
+        cout << "\n\tAttributes:\n";
+        for (auto y : parser.getTree().getNode(x).getAllAttributes())
+            cout << "\t" << y.first << "=" << y.second << '\n';
         _children.pop_front();
         auto chldrn = parser.getTree().getNode(x).getChildrenUID();
         for (auto y = chldrn.rbegin(); y != chldrn.rend(); ++y)

@@ -179,6 +179,7 @@ namespace xml_parser
                     value += *i;
                     ++i;
                 }
+                ++i;
 
                 attributes[attribute] = value;
             }
