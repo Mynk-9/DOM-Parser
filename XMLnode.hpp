@@ -33,6 +33,9 @@ namespace xml_parser
         std::map<std::string, std::string> tagAttributes;
         std::string tagName;
 
+        bool innerDataNode = false;
+        std::string innerData;
+
     public:
         /**
          * @brief   Constructor for XMLnode
@@ -41,6 +44,15 @@ namespace xml_parser
          */
         XMLnode(std::string tagName, XMLnodeUID uid, XMLnodeUID parent)
             : tagName(tagName), uid(uid), parent(parent){};
+
+        /**
+         * @brief   Constructor for XMLnode specially for storing inner-data
+         * @param   XMLnodeUID  uid         UID of this node
+         * @param   XMLnodeUID  parent      UID of the parent
+         * @param   std::string innerData   inner text data stored by the node
+         * */
+        XMLnode(XMLnodeUID uid, XMLnodeUID parent, std::string innerData)
+            : uid(uid), parent(parent), innerData(innerData), innerDataNode(true){};
 
         /**
          * @brief   Returns the tagName of the node.
@@ -66,6 +78,8 @@ namespace xml_parser
          */
         inline void setAttribute(std::string attribute, std::string value)
         {
+            if (innerDataNode)
+                return;
             tagAttributes[attribute] = value;
         }
 
@@ -102,6 +116,8 @@ namespace xml_parser
          */
         inline void addChild(XMLnodeUID child)
         {
+            if (innerDataNode)
+                return;
             children.push_back(child);
         }
 
@@ -111,6 +127,8 @@ namespace xml_parser
          */
         void removeChild(XMLnodeUID uid)
         {
+            if (innerDataNode)
+                return;
             children.remove(uid);
         }
 
@@ -141,68 +159,8 @@ namespace xml_parser
             children = node.children;
             tagAttributes = node.tagAttributes;
             tagName = node.tagName;
-        }
-    };
 
-    /// @brief Special node for storing text data in an element
-    class XMLInnerDataNode
-    {
-    private:
-        XMLnodeUID uid;
-        XMLnodeUID parent;
-        std::string innerData;
-
-    public:
-        /**
-         * @brief   Constructor for XMLInnerDataNode
-         * @param   std::string             tagName     Name of the tag of the node.
-         * @param   xml_parser::XMLnodeUID  uid         UID of this node.
-         */
-        XMLInnerDataNode(XMLnodeUID uid, XMLnodeUID parent)
-            : uid(uid), parent(parent){};
-
-        /**
-         * @brief   Returns the UID of the node.
-         */
-        inline XMLnodeUID getUID()
-        {
-            return uid;
-        }
-
-        /**
-         * @brief   Sets the inner data - the data between opening and
-         *          closing tags of node.
-         * @param   std::string data    The inner data.
-         */
-        inline void setInnerData(std::string data)
-        {
-            innerData = data;
-        }
-
-        /**
-         * @brief   Returns the parent node UID.
-         */
-        inline XMLnodeUID getParent()
-        {
-            return parent;
-        }
-
-        /**
-         * @brief   Sets a new parent node.
-         * @param   xml_parser::XMLnodeUID new_parent_UID    UID of the new parent node.
-         */
-        inline void setParent(XMLnodeUID new_parent_UID)
-        {
-            parent = new_parent_UID;
-        }
-
-        /**
-         * @brief   Operator overload for =operator
-         */
-        void operator=(const XMLInnerDataNode &node)
-        {
-            uid = node.uid;
-            parent = node.parent;
+            innerDataNode = node.innerDataNode;
             innerData = node.innerData;
         }
     };
