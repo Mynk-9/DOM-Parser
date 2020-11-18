@@ -13,7 +13,10 @@
 //    limitations under the License.
 
 #include <iostream>
+#include <fstream>
 #include <string>
+#include <list>
+
 #include "XMLparser.hpp"
 
 using namespace std;
@@ -31,7 +34,26 @@ int main()
     uid = tree.addNode(uid, "child2");
     tree.getNode(uid).setAttribute("abc", "xyz");
     cout << tree.getNode(uid).getAttribute("abc") << "\n";
-    
+
+    cout << "\nParser:\n";
+    // xml_parser::XMLparser parser;
+    ifstream fin("testing.xml");
+    string data = "", _data;
+    string _tag;
+    list<xml_parser::XMLnodeUID> _children;
+    while (fin >> _data)
+        data += _data + " ";
+    cout << data << "\n";
+    xml_parser::XMLparser parser(data);
+
+    uid = 0;
+    _tag = parser.getTree().getNode(uid).getTagName();
+    cout << _tag << "\n";
+    _children = parser.getTree().getNode(uid).getChildrenUID();
+    for (auto x : _children)
+    {
+        cout << parser.getTree().getNode(x).getTagName() << "\n";
+    }
 
     return 0;
 }

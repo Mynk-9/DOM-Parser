@@ -1,0 +1,6 @@
+<test>
+    <test1>
+        <test11 atr1=x atr2="y" />
+    </test1>
+    <test2></test2>
+</test>

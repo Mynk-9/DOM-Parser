@@ -65,7 +65,7 @@ namespace xml_parser
          *          of undefined behaviour when used this contructor without proper
          *          knowledge.
          */
-        XMLtree();
+        XMLtree() {}
 
         /**
          * @brief   Constructor of the tree with an initial root node.
@@ -181,6 +181,16 @@ namespace xml_parser
                 ancestorList.push_back(node_uid);
             }
             return ancestorList;
+        }
+
+        /**
+         * @brief   Operator overload for =
+         * */
+        void operator=(const XMLtree &tree)
+        {
+            this->nodes = tree.nodes;
+            this->nodes_counter = tree.nodes_counter;
+            this->vacantUIDs = tree.vacantUIDs;
         }
     };
 
