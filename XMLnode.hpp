@@ -30,7 +30,6 @@ namespace xml_parser
         XMLnodeUID uid;
         XMLnodeUID parent;
         std::list<XMLnodeUID> children;
-        std::string innerData;
         std::map<std::string, std::string> tagAttributes;
         std::string tagName;
 
@@ -57,16 +56,6 @@ namespace xml_parser
         inline XMLnodeUID getUID()
         {
             return uid;
-        }
-
-        /**
-         * @brief   Sets the inner data - the data between opening and
-         *          closing tags of node.
-         * @param   std::string data    The inner data.
-         */
-        inline void setInnerData(std::string data)
-        {
-            innerData = data;
         }
 
         /**
@@ -141,7 +130,6 @@ namespace xml_parser
             uid = node.uid;
             parent = node.parent;
             children = node.children;
-            innerData = node.innerData;
             tagAttributes = node.tagAttributes;
             tagName = node.tagName;
         }
