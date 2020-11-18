@@ -103,6 +103,31 @@ namespace xml_parser
         }
 
         /**
+         * @brief   Adds a inner-data node within the tree under another node.
+         * @param   xml_parser::XMLnodeUID parent   Parent node UID.
+         * @param   std::string            data     inner-data
+         * @return  XMLnodeID   if node added succefully
+         *          -1          if parent does not exist
+         */
+        XMLnodeUID addInnerDataNode(XMLnodeUID parent, std::string data)
+        {
+            if (!checkNodeExistance(parent))
+                return -1;
+
+            XMLnodeUID UID = generateUID();
+            XMLnode node(UID, parent, data);
+
+            if (UID < nodes.size())    // If a vacant space if filled then use [] operator
+                nodes[UID] = node;     // otherwise push_back to the end of the vector.
+            else                       // Condition added to make sure that UID and iterator
+                nodes.push_back(node); // position is consistent.
+
+            nodes[parent].addChild(UID);
+
+            return UID;
+        }
+
+        /**
          * @brief   Returns a reference to the node with given UID.
          * @param  xml_parser::XMLnodeUID  node    UID of the node.
          */
