@@ -32,71 +32,7 @@ namespace xml_parser
          */
         int parser(const std::string &data)
         {
-            return _parser_prototype(data);
-        }
-
-        int _parser_prototype(const std::string &data)
-        {
-            std::queue<XMLnodeUID> stack;
-            stack.push(-1);
-
-            for (auto i = data.begin(); i != data.end(); ++i)
-            {
-                if (*i == '<' && *(i + 1) == '</')
-                {
-                }
-                else if (*i == '<')
-                {
-                    std::string tagName = "";
-                    std::queue<std::pair<std::string, std::string>> attributes;
-
-                    auto j = i + 1;
-                    for (; *j != ' ', *j != '>'; ++j)
-                        tagName += *j;
-
-                    if (*j == '>')
-                    {
-                        i = j;
-                        continue;
-                    }
-
-                    ++j;
-                    for (; *j != '>';)
-                    {
-                        std::string attribute = "", value = "";
-                        for (; *j != '='; ++j)
-                            attribute += *j;
-                        ++j;
-                        if (*j == '\"')
-                        {
-                            ++j;
-                            for (; *j != '\"', *j != '>'; ++j)
-                                value += *j;
-                            if (*j == '\"')
-                                ++j;
-                        }
-                        else
-                        {
-                            ++j;
-                            for (; *j != ' ', *j != '>'; ++j)
-                                value += *j;
-                        }
-
-                        attributes.push({attribute, value});
-                    }
-
-                    i = j;
-
-                    XMLnodeUID uid = tree.addNode(stack.front(), tagName);
-                    stack.push(uid);
-                    while (!attributes.empty())
-                    {
-                        auto k = attributes.front();
-                        tree.getNode(uid).setAttribute(k.first, k.second);
-                        attributes.pop();
-                    }
-                }
-            }
+            return 0;
         }
 
     public:
