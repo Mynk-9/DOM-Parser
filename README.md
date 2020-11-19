@@ -8,4 +8,4 @@ Current capabilities:
 
 Needed work:
   1) Currently it is not resilient to syntax errors.
-  2) Currently it cannot read the plain text data in an element, i.e., the plain text between opening and closing tags.
+  2) It does not work with XML schema etc. Right now it is a simple markup reader.
