@@ -61,12 +61,22 @@ int main()
     while (!_children.empty()) // basic dfs
     {
         auto x = _children.front();
-        cout << parser.getTree().getNode(x).getTagName() << "\n";
-        cout << "\n\tAttributes:\n";
-        for (auto y : parser.getTree().getNode(x).getAllAttributes())
-            cout << "\t" << y.first << "=" << y.second << '\n';
+        auto curr_node = parser.getTree().getNode(x);
+        if (!curr_node.isInnerDataNode())
+            cout << parser.getTree().getNode(curr_node.getParent()).getTagName() << "->"
+                 << curr_node.getTagName() << "\n";
+        else
+            cout << parser.getTree().getNode(curr_node.getParent()).getTagName() << "->"
+                 << "INNER_DATA=" << curr_node.getInnerData() << "\n";
+        if (!curr_node.getAllAttributes().empty())
+        {
+            cout << "\tAttributes:\n";
+            for (auto y : curr_node.getAllAttributes())
+                cout << "\t" << y.first << "=" << y.second << '\n';
+        }
+
         _children.pop_front();
-        auto chldrn = parser.getTree().getNode(x).getChildrenUID();
+        auto chldrn = curr_node.getChildrenUID();
         for (auto y = chldrn.rbegin(); y != chldrn.rend(); ++y)
             _children.push_front(*y);
     }
