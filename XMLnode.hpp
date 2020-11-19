@@ -150,6 +150,23 @@ namespace xml_parser
         }
 
         /**
+         * @brief   Checks if node is inner-data node
+         * */
+        inline bool isInnerDataNode()
+        {
+            return innerDataNode;
+        }
+
+        /**
+         * @brief   Returns inner-data if the node is stores inner data.
+         *          Returns empty string if node does not store inner-data.
+         * */
+        inline std::string getInnerData()
+        {
+            return innerData;
+        }
+
+        /**
          * @brief   Operator overload for =operator
          */
         void operator=(const XMLnode &node)
