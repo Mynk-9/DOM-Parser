@@ -71,7 +71,7 @@ namespace xml_parser
             // scan the rest
             for (; i != data.end(); ++i)
             {
-                std::string tag_name;
+                std::string tag_name, inner_data;
                 std::map<std::string, std::string> attr;
                 int res;
                 if (*i == '<')
@@ -100,6 +100,26 @@ namespace xml_parser
                         break;
                     }
                 }
+                else if (*i == '>')
+                    continue;
+                else
+                {
+                    while ((*i) != '<' && i != data.end())
+                    {
+                        inner_data += *i;
+                        ++i;
+                    }
+                    --i;
+
+                    if (inner_data != " " && inner_data != "\n" && inner_data != "\r\n")
+                    {
+                        tree.addInnerDataNode(element_stack.top(), inner_data);
+                        // std::cout << "\n\tdebug: inner_data=\"" << inner_data << "\"\n";
+                    }
+                }
+
+                if (element_stack.empty())
+                    break;
             }
 
             return 0;

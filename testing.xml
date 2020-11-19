@@ -3,5 +3,5 @@
         <test11 atr1='x' atr2="y" atr3=z atr4 />
         <test12></test12>
     </test1>
-    <test2></test2>
+    <test2>This is a test.</test2>
 </test>
