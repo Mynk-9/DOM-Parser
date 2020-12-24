@@ -19,7 +19,7 @@
 #include <map>
 #include <string>
 
-#include "XMLnodeUID.hpp"
+#include "DOMnodeUID.hpp"
 
 namespace dom_parser
 {
