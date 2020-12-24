@@ -1,5 +1,5 @@
 # DOM-Parser
- A small DOM Parsing library. Work in progress.  
+ A small DOM(Document Object Model) Parsing library. Work in progress.  
   
 Current capabilities:
  1) Scan basic markup code.
