@@ -20,7 +20,7 @@
 #include <map>
 #include <stack>
 
-#include "XMLtree.hpp"
+#include "DOMtree.hpp"
 
 namespace dom_parser
 {
