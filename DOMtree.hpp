@@ -19,7 +19,7 @@
 #include <vector>
 #include <queue>
 
-#include "XMLnode.hpp"
+#include "DOMnode.hpp"
 
 namespace dom_parser
 {
