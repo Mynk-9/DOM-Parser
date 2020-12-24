@@ -1,5 +1,5 @@
-# XML-Parser
- A small XML Parsing library. Work in progress.  
+# DOM-Parser
+ A small DOM Parsing library. Work in progress.  
   
 Current capabilities:
  1) Scan basic markup code.
@@ -8,4 +8,3 @@ Current capabilities:
 
 Needed work:
   1) Currently it is not resilient to syntax errors.
-  2) It does not work with XML schema etc. Right now it is a simple markup reader.
