@@ -12,8 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef XML_PARSER_XML_NODE
-#define XML_PARSER_XML_NODE
+#ifndef DOM_PARSER_DOM_NODE
+#define DOM_PARSER_DOM_NODE
 
 #include <list>
 #include <map>
@@ -21,15 +21,15 @@
 
 #include "XMLnodeUID.hpp"
 
-namespace xml_parser
+namespace dom_parser
 {
-    /// @brief   Node in the XML tree.
-    class XMLnode
+    /// @brief   Node in the DOM tree.
+    class DOMnode
     {
     private:
-        XMLnodeUID uid;
-        XMLnodeUID parent;
-        std::list<XMLnodeUID> children;
+        DOMnodeUID uid;
+        DOMnodeUID parent;
+        std::list<DOMnodeUID> children;
         std::map<std::string, std::string> tagAttributes;
         std::string tagName;
 
@@ -38,20 +38,20 @@ namespace xml_parser
 
     public:
         /**
-         * @brief   Constructor for XMLnode
+         * @brief   Constructor for DOMnode
          * @param   std::string             tagName     Name of the tag of the node.
-         * @param   xml_parser::XMLnodeUID  uid         UID of this node.
+         * @param   dom_parser::DOMnodeUID  uid         UID of this node.
          */
-        XMLnode(std::string tagName, XMLnodeUID uid, XMLnodeUID parent)
+        DOMnode(std::string tagName, DOMnodeUID uid, DOMnodeUID parent)
             : tagName(tagName), uid(uid), parent(parent){};
 
         /**
-         * @brief   Constructor for XMLnode specially for storing inner-data
-         * @param   XMLnodeUID  uid         UID of this node
-         * @param   XMLnodeUID  parent      UID of the parent
+         * @brief   Constructor for DOMnode specially for storing inner-data
+         * @param   DOMnodeUID  uid         UID of this node
+         * @param   DOMnodeUID  parent      UID of the parent
          * @param   std::string innerData   inner text data stored by the node
          * */
-        XMLnode(XMLnodeUID uid, XMLnodeUID parent, std::string innerData)
+        DOMnode(DOMnodeUID uid, DOMnodeUID parent, std::string innerData)
             : uid(uid), parent(parent), innerData(innerData), innerDataNode(true){};
 
         /**
@@ -65,7 +65,7 @@ namespace xml_parser
         /**
          * @brief   Returns the UID of the node.
          */
-        inline XMLnodeUID getUID()
+        inline DOMnodeUID getUID()
         {
             return uid;
         }
@@ -105,16 +105,16 @@ namespace xml_parser
         /**
          * @brief   Returns the list of children of the node.
          */
-        inline std::list<XMLnodeUID> getChildrenUID()
+        inline std::list<DOMnodeUID> getChildrenUID()
         {
             return children;
         }
 
         /**
          * @brief   Adds a new child to the node.
-         * @param   xml_parser::XMLnodeUID child    Child node.
+         * @param   dom_parser::DOMnodeUID child    Child node.
          */
-        inline void addChild(XMLnodeUID child)
+        inline void addChild(DOMnodeUID child)
         {
             if (innerDataNode)
                 return;
@@ -123,9 +123,9 @@ namespace xml_parser
 
         /**
          * @brief   Removes the child node with the given UID.
-         * @param   std::XMLnodeUID uid     UID of the child node to remove.
+         * @param   std::DOMnodeUID uid     UID of the child node to remove.
          */
-        void removeChild(XMLnodeUID uid)
+        void removeChild(DOMnodeUID uid)
         {
             if (innerDataNode)
                 return;
@@ -135,16 +135,16 @@ namespace xml_parser
         /**
          * @brief   Returns the parent node UID.
          */
-        inline XMLnodeUID getParent()
+        inline DOMnodeUID getParent()
         {
             return parent;
         }
 
         /**
          * @brief   Sets a new parent node.
-         * @param   xml_parser::XMLnodeUID new_parent_UID    UID of the new parent node.
+         * @param   dom_parser::DOMnodeUID new_parent_UID    UID of the new parent node.
          */
-        inline void setParent(XMLnodeUID new_parent_UID)
+        inline void setParent(DOMnodeUID new_parent_UID)
         {
             parent = new_parent_UID;
         }
@@ -169,7 +169,7 @@ namespace xml_parser
         /**
          * @brief   Operator overload for =operator
          */
-        void operator=(const XMLnode &node)
+        void operator=(const DOMnode &node)
         {
             uid = node.uid;
             parent = node.parent;
@@ -182,6 +182,6 @@ namespace xml_parser
         }
     };
 
-}; // namespace xml_parser
+}; // namespace dom_parser
 
 #endif

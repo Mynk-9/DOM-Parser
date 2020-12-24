@@ -12,12 +12,12 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef XML_PARSER_XML_NODE_UID
-#define XML_PARSER_XML_NODE_UID
+#ifndef DOM_PARSER_DOM_NODE_UID
+#define DOM_PARSER_DOM_NODE_UID
 
-namespace xml_parser
+namespace dom_parser
 {
-    typedef int XMLnodeUID;
-} // namespace xml_parser
+    typedef int DOMnodeUID;
+} // namespace dom_parser
 
 #endif

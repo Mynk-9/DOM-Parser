@@ -12,8 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef XML_PARSER_XML_TREE
-#define XML_PARSER_XML_TREE
+#ifndef DOM_PARSER_DOM_TREE
+#define DOM_PARSER_DOM_TREE
 
 #include <string>
 #include <vector>
@@ -21,40 +21,40 @@
 
 #include "XMLnode.hpp"
 
-namespace xml_parser
+namespace dom_parser
 {
-    class XMLtree
+    class DOMtree
     {
     private:
-        std::vector<XMLnode> nodes;
+        std::vector<DOMnode> nodes;
         int nodes_counter = 0;
 
-        std::queue<XMLnodeUID> vacantUIDs;
-        XMLnode deletedNode = XMLnode("", -1, -1);
+        std::queue<DOMnodeUID> vacantUIDs;
+        DOMnode deletedNode = DOMnode("", -1, -1);
 
         /**
-        * @brief   Generates a new XMLnodeUID.
+        * @brief   Generates a new DOMnodeUID.
         */
-        inline XMLnodeUID generateUID()
+        inline DOMnodeUID generateUID()
         {
             ++nodes_counter;
 
-            if (nodes_counter == 1) // added to fix a possible bug in which multiple root XML
+            if (nodes_counter == 1) // added to fix a possible bug in which multiple root DOM
                 return 0;           // elements could occur if once root node is deleted.
             if (vacantUIDs.empty())
                 return nodes_counter - 1;
 
-            XMLnodeUID uid = vacantUIDs.front();
+            DOMnodeUID uid = vacantUIDs.front();
             vacantUIDs.pop();
             return uid;
         }
 
         /**
          * @brief   Checks existance of a node with given UID.
-         * @param   xml_parser::XMLnodeUID node     The node UID.
+         * @param   dom_parser::DOMnodeUID node     The node UID.
          * @return  true or false accordingly
          */
-        inline bool checkNodeExistance(XMLnodeUID node)
+        inline bool checkNodeExistance(DOMnodeUID node)
         {
             return (node < nodes.size() && nodes[node].getUID() != -1);
         }
@@ -65,32 +65,32 @@ namespace xml_parser
          *          of undefined behaviour when used this contructor without proper
          *          knowledge.
          */
-        XMLtree() {}
+        DOMtree() {}
 
         /**
          * @brief   Constructor of the tree with an initial root node.
          * @param   std::string rootName    Name of the root node.
          */
-        XMLtree(std::string root)
+        DOMtree(std::string root)
         {
-            XMLnode _root(root, generateUID(), -1);
+            DOMnode _root(root, generateUID(), -1);
             nodes.push_back(_root);
         }
 
         /**
          * @brief   Adds a node within the tree.
-         * @param   xml_parser::XMLnodeUID parent   Parent node UID.
+         * @param   dom_parser::DOMnodeUID parent   Parent node UID.
          * @param   std::string            tagName  Tag name of the node.
-         * @return  XMLnodeID   if node added succefully
+         * @return  DOMnodeID   if node added succefully
          *          -1          if parent does not exist
          */
-        XMLnodeUID addNode(XMLnodeUID parent, std::string tagName)
+        DOMnodeUID addNode(DOMnodeUID parent, std::string tagName)
         {
             if (!checkNodeExistance(parent))
                 return -1;
 
-            XMLnodeUID UID = generateUID();
-            XMLnode node(tagName, UID, parent);
+            DOMnodeUID UID = generateUID();
+            DOMnode node(tagName, UID, parent);
 
             if (UID < nodes.size())    // If a vacant space if filled then use [] operator
                 nodes[UID] = node;     // otherwise push_back to the end of the vector.
@@ -104,18 +104,18 @@ namespace xml_parser
 
         /**
          * @brief   Adds a inner-data node within the tree under another node.
-         * @param   xml_parser::XMLnodeUID parent   Parent node UID.
+         * @param   dom_parser::DOMnodeUID parent   Parent node UID.
          * @param   std::string            data     inner-data
-         * @return  XMLnodeID   if node added succefully
+         * @return  DOMnodeID   if node added succefully
          *          -1          if parent does not exist
          */
-        XMLnodeUID addInnerDataNode(XMLnodeUID parent, std::string data)
+        DOMnodeUID addInnerDataNode(DOMnodeUID parent, std::string data)
         {
             if (!checkNodeExistance(parent))
                 return -1;
 
-            XMLnodeUID UID = generateUID();
-            XMLnode node(UID, parent, data);
+            DOMnodeUID UID = generateUID();
+            DOMnode node(UID, parent, data);
 
             if (UID < nodes.size())    // If a vacant space if filled then use [] operator
                 nodes[UID] = node;     // otherwise push_back to the end of the vector.
@@ -129,21 +129,21 @@ namespace xml_parser
 
         /**
          * @brief   Returns a reference to the node with given UID.
-         * @param  xml_parser::XMLnodeUID  node    UID of the node.
+         * @param  dom_parser::DOMnodeUID  node    UID of the node.
          */
-        inline XMLnode &getNode(XMLnodeUID node)
+        inline DOMnode &getNode(DOMnodeUID node)
         {
             return nodes[node];
         }
 
         /**
          * @brief   Moves a whole subtree from one parent node to another.
-         * @param   xml_parser::XMLnodeUID subtree_root     Subtree root node UID.
-         * @param   xml_parser::XMLnodeUID new_parent       New parent node of the subtree.
+         * @param   dom_parser::DOMnodeUID subtree_root     Subtree root node UID.
+         * @param   dom_parser::DOMnodeUID new_parent       New parent node of the subtree.
          * @return  true    if moving is successful
          *          false   if moving is unsuccessful due to problem in input.
          */
-        bool moveSubtree(XMLnodeUID subtree_root, XMLnodeUID new_parent)
+        bool moveSubtree(DOMnodeUID subtree_root, DOMnodeUID new_parent)
         {
             if (!checkNodeExistance(subtree_root) || !checkNodeExistance(new_parent))
                 return false;
@@ -152,12 +152,12 @@ namespace xml_parser
             if (subtree_root == new_parent)
                 return false;
 
-            std::vector<XMLnodeUID> ancestors = getAncestorList(new_parent);
-            for (XMLnodeUID ancestor : ancestors)
+            std::vector<DOMnodeUID> ancestors = getAncestorList(new_parent);
+            for (DOMnodeUID ancestor : ancestors)
                 if (ancestor == subtree_root)
                     return false;
 
-            XMLnodeUID old_parent = nodes[subtree_root].getParent();
+            DOMnodeUID old_parent = nodes[subtree_root].getParent();
             nodes[old_parent].removeChild(subtree_root);
             nodes[new_parent].addChild(subtree_root);
             nodes[subtree_root].setParent(new_parent);
@@ -167,22 +167,22 @@ namespace xml_parser
         /**
          * @brief   Deletes the subtree with the given node as root.
          *          Deletes the single node if no child nodes present.
-         * @param   xml_parser::XMLnodeUID subtree_root Subtree root node.
+         * @param   dom_parser::DOMnodeUID subtree_root Subtree root node.
          */
-        void deleteSubtree(XMLnodeUID subtree_root)
+        void deleteSubtree(DOMnodeUID subtree_root)
         {
             if (!checkNodeExistance(subtree_root))
                 return;
 
-            XMLnodeUID current_node; // = subtree_root;
-            std::queue<XMLnodeUID> node_queue;
+            DOMnodeUID current_node; // = subtree_root;
+            std::queue<DOMnodeUID> node_queue;
             node_queue.push(subtree_root);
 
             while (!node_queue.empty())
             {
                 current_node = node_queue.front();
 
-                for (XMLnodeUID node : nodes[current_node].getChildrenUID())
+                for (DOMnodeUID node : nodes[current_node].getChildrenUID())
                     node_queue.push(node);
                 node_queue.pop();
 
@@ -194,12 +194,12 @@ namespace xml_parser
 
         /**
          * @brief   Returns std::vector of ancestors of the given node.
-         * @param   xml_parser::XMLnodeUID node     The node UID.
+         * @param   dom_parser::DOMnodeUID node     The node UID.
          */
-        std::vector<XMLnodeUID> getAncestorList(XMLnodeUID node)
+        std::vector<DOMnodeUID> getAncestorList(DOMnodeUID node)
         {
-            std::vector<XMLnodeUID> ancestorList;
-            XMLnodeUID node_uid = node;
+            std::vector<DOMnodeUID> ancestorList;
+            DOMnodeUID node_uid = node;
             while (node_uid != 0)
             {
                 node_uid = nodes[node_uid].getParent();
@@ -211,7 +211,7 @@ namespace xml_parser
         /**
          * @brief   Operator overload for =
          * */
-        void operator=(const XMLtree &tree)
+        void operator=(const DOMtree &tree)
         {
             this->nodes = tree.nodes;
             this->nodes_counter = tree.nodes_counter;
@@ -219,6 +219,6 @@ namespace xml_parser
         }
     };
 
-} // namespace xml_parser
+} // namespace dom_parser
 
 #endif

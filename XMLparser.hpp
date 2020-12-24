@@ -12,8 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef XML_PARSER_XML_PARSER
-#define XML_PARSER_XML_PARSER
+#ifndef DOM_PARSER_DOM_PARSER
+#define DOM_PARSER_DOM_PARSER
 
 #include <string>
 #include <vector>
@@ -22,19 +22,19 @@
 
 #include "XMLtree.hpp"
 
-namespace xml_parser
+namespace dom_parser
 {
-    class XMLparser
+    class DOMparser
     {
     private:
-        XMLtree tree;
+        DOMtree tree;
 
         /**
          * @brief   loads tree from the data
          */
         int _parser(const std::string &data)
         {
-            std::stack<XMLnodeUID> element_stack;
+            std::stack<DOMnodeUID> element_stack;
             auto i = data.begin();
 
             // add the root
@@ -55,10 +55,10 @@ namespace xml_parser
                         return (i - data.begin());
 
                     // set the root
-                    XMLtree _tree(tag_name);
+                    DOMtree _tree(tag_name);
                     // std::cout << "\n\tdebug: "
                     //           << "root tag=" << tag_name << "\n";
-                    XMLnodeUID uid = 0; // uid is 0 for root
+                    DOMnodeUID uid = 0; // uid is 0 for root
                     tree = _tree;
                     element_stack.push(uid);
                     for (auto const &attribute : attr)
@@ -79,7 +79,7 @@ namespace xml_parser
                     // std::cout << "\n\tdebug: tick; current_char=" << *i << "\n";
                     res = _data_scan_tag(i, data.end(), tag_name, attr);
                     // std::cout << "\n\tdebug: res=" << res << " tag_name=" << tag_name << "\n";
-                    XMLnodeUID uid;
+                    DOMnodeUID uid;
                     switch (res)
                     {
                     case 0: // fail
@@ -210,13 +210,13 @@ namespace xml_parser
         /**
          * @brief Default constructor.
          */
-        XMLparser() {}
+        DOMparser() {}
 
         /**
          * @brief   Constructs the tree from the provided data.
          * @param   std::string data    the data
          */
-        XMLparser(const std::string &data)
+        DOMparser(const std::string &data)
         {
             _parser(data);
         }
@@ -240,12 +240,12 @@ namespace xml_parser
          * @brief   Returns the loaded tree else the tree is blank
          *          with only one node - root node with blank tag name.
          */
-        inline XMLtree getTree()
+        inline DOMtree getTree()
         {
             return tree;
         }
     };
 
-} // namespace xml_parser
+} // namespace dom_parser
 
 #endif
