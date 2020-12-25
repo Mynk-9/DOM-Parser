@@ -10,7 +10,8 @@
                 "UNICODE",
                 "_UNICODE"
             ],
-            "compilerPath": "C:\\mingw-w64\\winlibs-mingw-w64-x86_64-9.3.0-7.0.0-r2\\mingw64\\bin\\gcc.exe"
+            "compilerPath": "C:\\mingw-w64\\winlibs-mingw-w64-x86_64-9.3.0-7.0.0-r2\\mingw64\\bin\\gcc.exe",
+            "cppStandard": "c++17"
         }
     ],
     "version": 4

@@ -24,14 +24,14 @@ THE CODE HERE IS NOT DOCUMENTED.
 #include <list>
 #include <stack>
 
-#include "XMLparser.hpp"
+#include "DOMparser.hpp"
 
 using namespace std;
 
 int main()
 {
-    xml_parser::XMLtree tree("root");
-    xml_parser::XMLnodeUID uid;
+    dom_parser::DOMtree tree("root");
+    dom_parser::DOMnodeUID uid;
 
     uid = tree.addNode(0, "child1");
     uid = tree.addNode(uid, "child1child1");
@@ -43,12 +43,12 @@ int main()
     cout << tree.getNode(uid).getAttribute("abc") << "\n";
 
     cout << "\nParser:\n";
-    // xml_parser::XMLparser parser;
+    // dom_parser::DOMparser parser;
     ifstream fin("testing.xml");
     string data = "", _data;
     string _tag;
-    list<xml_parser::XMLnodeUID> _children;
-    xml_parser::XMLparser parser;
+    list<dom_parser::DOMnodeUID> _children;
+    dom_parser::DOMparser parser;
     while (fin >> _data)
         data += _data + " ";
     cout << data << "\n";
@@ -56,7 +56,7 @@ int main()
 
     uid = 0; // root uid
     _tag = parser.getTree().getNode(uid).getTagName();
-    cout << _tag << "\n";
+    cout << _tag << "\n"; // print root tag
     _children = parser.getTree().getNode(uid).getChildrenUID();
     while (!_children.empty()) // basic dfs
     {

@@ -15,6 +15,7 @@
 #ifndef DOM_PARSER_DOM_TREE
 #define DOM_PARSER_DOM_TREE
 
+#include <memory>
 #include <string>
 #include <vector>
 #include <queue>
@@ -26,11 +27,23 @@ namespace dom_parser
     class DOMtree
     {
     private:
-        std::vector<DOMnode> nodes;
+        std::vector<std::shared_ptr<DOMnode>> nodes;
         int nodes_counter = 0;
 
         std::queue<DOMnodeUID> vacantUIDs;
-        DOMnode deletedNode = DOMnode("", -1, -1);
+        // DOMnode deletedNode = DOMnode("", -1, -1);
+        // std::unique_ptr<DOMnode> deletedNodeP(DOMnode("", -1, -1));
+
+#define DOM_TREE_DELETED_NODE DOMnode("", -1, -1)
+
+        /**
+         * @brief   Gets reference to the node at the pointer in vector
+         * @param   uid uid of the node
+         * */
+        inline DOMnode &_nodes(DOMnodeUID uid)
+        {
+            return *(nodes[uid].get());
+        }
 
         /**
         * @brief   Generates a new DOMnodeUID.
@@ -56,7 +69,7 @@ namespace dom_parser
          */
         inline bool checkNodeExistance(DOMnodeUID node)
         {
-            return (node < nodes.size() && nodes[node].getUID() != -1);
+            return (node < nodes.size() && _nodes(node).getUID() != -1);
         }
 
     public:
@@ -73,8 +86,9 @@ namespace dom_parser
          */
         DOMtree(std::string root)
         {
-            DOMnode _root(root, generateUID(), -1);
-            nodes.push_back(_root);
+            nodes.push_back(
+                std::shared_ptr<DOMnode>(
+                    new DOMnode(root, generateUID(), -1))); // root
         }
 
         /**
@@ -90,14 +104,14 @@ namespace dom_parser
                 return -1;
 
             DOMnodeUID UID = generateUID();
-            DOMnode node(tagName, UID, parent);
+            std::shared_ptr<DOMnode> node(new DOMnode(tagName, UID, parent));
 
-            if (UID < nodes.size())    // If a vacant space if filled then use [] operator
-                nodes[UID] = node;     // otherwise push_back to the end of the vector.
-            else                       // Condition added to make sure that UID and iterator
-                nodes.push_back(node); // position is consistent.
+            if (UID < nodes.size())                      // If a vacant space if filled then use [] operator
+                nodes[UID] = std::move(node);            // otherwise push_back to the end of the vector.
+            else                                         // Condition added to make sure that UID and iterator
+                nodes.push_back(std::move(node));        // position is consistent.
 
-            nodes[parent].addChild(UID);
+            _nodes(parent).addChild(UID);
 
             return UID;
         }
@@ -115,14 +129,14 @@ namespace dom_parser
                 return -1;
 
             DOMnodeUID UID = generateUID();
-            DOMnode node(UID, parent, data);
+            std::shared_ptr<DOMnode> node(new DOMnode(UID, parent, data));
 
-            if (UID < nodes.size())    // If a vacant space if filled then use [] operator
-                nodes[UID] = node;     // otherwise push_back to the end of the vector.
-            else                       // Condition added to make sure that UID and iterator
-                nodes.push_back(node); // position is consistent.
+            if (UID < nodes.size())                      // If a vacant space if filled then use [] operator
+                nodes[UID] = std::move(node);            // otherwise push_back to the end of the vector.
+            else                                         // Condition added to make sure that UID and iterator
+                nodes.push_back(std::move(node));        // position is consistent.
 
-            nodes[parent].addChild(UID);
+            _nodes(parent).addChild(UID);
 
             return UID;
         }
@@ -133,7 +147,7 @@ namespace dom_parser
          */
         inline DOMnode &getNode(DOMnodeUID node)
         {
-            return nodes[node];
+            return _nodes(node);
         }
 
         /**
@@ -157,10 +171,10 @@ namespace dom_parser
                 if (ancestor == subtree_root)
                     return false;
 
-            DOMnodeUID old_parent = nodes[subtree_root].getParent();
-            nodes[old_parent].removeChild(subtree_root);
-            nodes[new_parent].addChild(subtree_root);
-            nodes[subtree_root].setParent(new_parent);
+            DOMnodeUID old_parent = _nodes(subtree_root).getParent();
+            _nodes(old_parent).removeChild(subtree_root);
+            _nodes(new_parent).addChild(subtree_root);
+            _nodes(subtree_root).setParent(new_parent);
             return true;
         }
 
@@ -182,12 +196,12 @@ namespace dom_parser
             {
                 current_node = node_queue.front();
 
-                for (DOMnodeUID node : nodes[current_node].getChildrenUID())
+                for (DOMnodeUID node : _nodes(current_node).getChildrenUID())
                     node_queue.push(node);
                 node_queue.pop();
 
                 vacantUIDs.push(current_node);
-                nodes[current_node] = deletedNode;
+                nodes[current_node] = std::shared_ptr<DOMnode>(new DOM_TREE_DELETED_NODE);
                 nodes_counter--;
             }
         }
@@ -202,7 +216,7 @@ namespace dom_parser
             DOMnodeUID node_uid = node;
             while (node_uid != 0)
             {
-                node_uid = nodes[node_uid].getParent();
+                node_uid = _nodes(node_uid).getParent();
                 ancestorList.push_back(node_uid);
             }
             return ancestorList;
@@ -213,12 +227,13 @@ namespace dom_parser
          * */
         void operator=(const DOMtree &tree)
         {
-            this->nodes = tree.nodes;
+            this->nodes = std::move(tree.nodes);
             this->nodes_counter = tree.nodes_counter;
-            this->vacantUIDs = tree.vacantUIDs;
+            this->vacantUIDs = std::move(tree.vacantUIDs);
         }
     };
 
 } // namespace dom_parser
 
+#undef DOM_TREE_DELETED_NODE
 #endif
