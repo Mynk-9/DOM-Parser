@@ -206,6 +206,53 @@ namespace dom_parser
             return 1;
         }
 
+        /**
+         * @brief   Helper function, generates output for the tree.
+         * @param   _node       Initial node
+         * @param   indent      Indentation string
+         * @param   indentation Current indentation at the node
+         * @param   _newline    Char to be used as newline char
+         * */
+        std::string _process_output_for_node(DOMnodeUID _node, const std::string &indent,
+                                             std::string indentation, std::string _newline)
+        {
+            auto node = tree.getNode(_node);
+            std::string s;
+
+            // set indentation
+            s += indentation;
+
+            // check if node is innerData node
+            if (node.isInnerDataNode())
+            {
+                s += node.getInnerData() + _newline;
+                return s;
+            }
+
+            // opening and closing tags
+            s += "<" + node.getTagName();
+            for (auto i : node.getAllAttributes())
+            {
+                s += " " + i.first;
+                if (!i.second.empty())
+                    s += "=\"" + i.second + "\"";
+            }
+            if (node.getChildrenUID().empty()) // if no child nodes
+                s += " />" + _newline;         // closing tags
+            else
+            {
+                // close opening tag
+                s += ">" + _newline;
+                // add children nodes
+                for (auto i : node.getChildrenUID())
+                    s += _process_output_for_node(i, indent, indentation + indent, _newline);
+                // closing tag
+                s += indentation + "</" + node.getTagName() + ">" + _newline;
+            }
+
+            return s;
+        }
+
     public:
         /**
          * @brief Default constructor.
@@ -243,6 +290,22 @@ namespace dom_parser
         inline DOMtree getTree()
         {
             return tree;
+        }
+
+        /**
+         * @brief   Returns string of formatted document.
+         * @param   minified    If output is required to be in minified form.
+         * @param   indent      string which denotes indentation, default is 4 spaces.
+         * @param   indentation initial indentation of the output, that is the 
+         *                      indentation applied on root node, default is empty.
+         * */
+        std::string getOutput(bool minified = false, std::string indent = "    ", std::string indentation = "")
+        {
+            // return _process_output_for_node(0, indent, indentation, (minified ? "" : "\n"));
+            if (minified)
+                return _process_output_for_node(0, "", "", "");
+            else
+                return _process_output_for_node(0, indent, indentation, "\n");
         }
     };
 

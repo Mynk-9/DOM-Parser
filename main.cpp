@@ -42,44 +42,23 @@ int main()
     tree.getNode(uid).setAttribute("abc", "xyz");
     cout << tree.getNode(uid).getAttribute("abc") << "\n";
 
-    cout << "\nParser:\n";
+    cout << "\nParser working...\n";
     // dom_parser::DOMparser parser;
-    ifstream fin("testing.xml");
+    ifstream fin("sheet1.xml");
+    ofstream fout("output.xml");
     string data = "", _data;
     string _tag;
     list<dom_parser::DOMnodeUID> _children;
     dom_parser::DOMparser parser;
     while (fin >> _data)
         data += _data + " ";
-    cout << data << "\n";
+    // cout << data << "\n";
     parser.loadTree(data);
+    fout << parser.getOutput(true) << flush;
+    cout << "done.\n";
 
-    uid = 0; // root uid
-    _tag = parser.getTree().getNode(uid).getTagName();
-    cout << _tag << "\n"; // print root tag
-    _children = parser.getTree().getNode(uid).getChildrenUID();
-    while (!_children.empty()) // basic dfs
-    {
-        auto x = _children.front();
-        auto curr_node = parser.getTree().getNode(x);
-        if (!curr_node.isInnerDataNode())
-            cout << parser.getTree().getNode(curr_node.getParent()).getTagName() << "->"
-                 << curr_node.getTagName() << "\n";
-        else
-            cout << parser.getTree().getNode(curr_node.getParent()).getTagName() << "->"
-                 << "INNER_DATA=" << curr_node.getInnerData() << "\n";
-        if (!curr_node.getAllAttributes().empty())
-        {
-            cout << "\tAttributes:\n";
-            for (auto y : curr_node.getAllAttributes())
-                cout << "\t" << y.first << "=" << y.second << '\n';
-        }
-
-        _children.pop_front();
-        auto chldrn = curr_node.getChildrenUID();
-        for (auto y = chldrn.rbegin(); y != chldrn.rend(); ++y)
-            _children.push_front(*y);
-    }
+    fin.close();
+    fout.close();
 
     return 0;
 }
