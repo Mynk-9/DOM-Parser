@@ -94,18 +94,18 @@ namespace dom_parser
         }
 
         /**
-         * @brief   Gets the ordered map of all the attributes
+         * @brief   Returns reference to the the ordered map of all the attributes
          *          with their values.
          * */
-        inline std::map<std::string, std::string> getAllAttributes()
+        inline const std::map<std::string, std::string> &getAllAttributes()
         {
             return tagAttributes;
         }
 
         /**
-         * @brief   Returns the list of children of the node.
+         * @brief   Returns reference to the list of children of the node.
          */
-        inline std::list<DOMnodeUID> getChildrenUID()
+        inline const std::list<DOMnodeUID> &getChildrenUID()
         {
             return children;
         }
@@ -158,10 +158,10 @@ namespace dom_parser
         }
 
         /**
-         * @brief   Returns inner-data if the node is stores inner data.
+         * @brief   Returns reference to inner-data if the node stores inner data.
          *          Returns empty string if node does not store inner-data.
          * */
-        inline std::string getInnerData()
+        inline const std::string &getInnerData()
         {
             return innerData;
         }

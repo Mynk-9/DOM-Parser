@@ -1,3 +1,5 @@
 *.exe
+*.xml
+!testing.xml
 # vscode files
 /.vscode
