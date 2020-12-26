@@ -33,23 +33,24 @@ namespace dom_parser
         std::map<std::string, std::string> tagAttributes;
         std::string tagName;
 
+        // if innerData node
         bool innerDataNode = false;
         std::string innerData;
 
     public:
         /**
          * @brief   Constructor for DOMnode
-         * @param   std::string             tagName     Name of the tag of the node.
-         * @param   dom_parser::DOMnodeUID  uid         UID of this node.
+         * @param   tagName     Name of the tag of the node.
+         * @param   uid         UID of this node.
          */
         DOMnode(std::string tagName, DOMnodeUID uid, DOMnodeUID parent)
             : tagName(tagName), uid(uid), parent(parent){};
 
         /**
          * @brief   Constructor for DOMnode specially for storing inner-data
-         * @param   DOMnodeUID  uid         UID of this node
-         * @param   DOMnodeUID  parent      UID of the parent
-         * @param   std::string innerData   inner text data stored by the node
+         * @param   uid         UID of this node
+         * @param   parent      UID of the parent
+         * @param   innerData   inner text data stored by the node
          * */
         DOMnode(DOMnodeUID uid, DOMnodeUID parent, std::string innerData)
             : uid(uid), parent(parent), innerData(innerData), innerDataNode(true){};
@@ -73,8 +74,8 @@ namespace dom_parser
         /**
          * @brief   Sets a new value to existing attribute or
          *          adds new attribute with the given value.
-         * @param   std::string attribute   Name of the attribute
-         * @param   std::string value       Data of the attribute
+         * @param   attribute   Name of the attribute
+         * @param   value       Data of the attribute
          */
         inline void setAttribute(std::string attribute, std::string value)
         {
@@ -86,7 +87,7 @@ namespace dom_parser
         /**
          * @brief   Gets the value of the said attribute. Returns
          *          empty string if the attribute does not exist.
-         * @param   std::string attribute   Name of the attribute
+         * @param   attribute   Name of the attribute
          */
         inline std::string getAttribute(std::string attribute)
         {
@@ -112,7 +113,7 @@ namespace dom_parser
 
         /**
          * @brief   Adds a new child to the node.
-         * @param   dom_parser::DOMnodeUID child    Child node.
+         * @param   child    Child node.
          */
         inline void addChild(DOMnodeUID child)
         {
@@ -123,7 +124,7 @@ namespace dom_parser
 
         /**
          * @brief   Removes the child node with the given UID.
-         * @param   std::DOMnodeUID uid     UID of the child node to remove.
+         * @param   uid     UID of the child node to remove.
          */
         void removeChild(DOMnodeUID uid)
         {
@@ -142,7 +143,7 @@ namespace dom_parser
 
         /**
          * @brief   Sets a new parent node.
-         * @param   dom_parser::DOMnodeUID new_parent_UID    UID of the new parent node.
+         * @param   new_parent_UID    UID of the new parent node.
          */
         inline void setParent(DOMnodeUID new_parent_UID)
         {

@@ -261,7 +261,7 @@ namespace dom_parser
 
         /**
          * @brief   Constructs the tree from the provided data.
-         * @param   std::string data    the data
+         * @param   data    the data
          */
         DOMparser(const std::string &data)
         {

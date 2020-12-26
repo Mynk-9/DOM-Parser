@@ -64,7 +64,7 @@ namespace dom_parser
 
         /**
          * @brief   Checks existance of a node with given UID.
-         * @param   dom_parser::DOMnodeUID node     The node UID.
+         * @param   node     The node UID.
          * @return  true or false accordingly
          */
         inline bool checkNodeExistance(DOMnodeUID node)
@@ -82,7 +82,7 @@ namespace dom_parser
 
         /**
          * @brief   Constructor of the tree with an initial root node.
-         * @param   std::string rootName    Name of the root node.
+         * @param   rootName    Name of the root node.
          */
         DOMtree(std::string root)
         {
@@ -93,8 +93,8 @@ namespace dom_parser
 
         /**
          * @brief   Adds a node within the tree.
-         * @param   dom_parser::DOMnodeUID parent   Parent node UID.
-         * @param   std::string            tagName  Tag name of the node.
+         * @param   parent   Parent node UID.
+         * @param   tagName  Tag name of the node.
          * @return  DOMnodeID   if node added succefully
          *          -1          if parent does not exist
          */
@@ -118,8 +118,8 @@ namespace dom_parser
 
         /**
          * @brief   Adds a inner-data node within the tree under another node.
-         * @param   dom_parser::DOMnodeUID parent   Parent node UID.
-         * @param   std::string            data     inner-data
+         * @param   parent   Parent node UID.
+         * @param   data     inner-data
          * @return  DOMnodeID   if node added succefully
          *          -1          if parent does not exist
          */
@@ -143,7 +143,7 @@ namespace dom_parser
 
         /**
          * @brief   Returns a reference to the node with given UID.
-         * @param  dom_parser::DOMnodeUID  node    UID of the node.
+         * @param   node    UID of the node.
          */
         inline DOMnode &getNode(DOMnodeUID node)
         {
@@ -152,8 +152,8 @@ namespace dom_parser
 
         /**
          * @brief   Moves a whole subtree from one parent node to another.
-         * @param   dom_parser::DOMnodeUID subtree_root     Subtree root node UID.
-         * @param   dom_parser::DOMnodeUID new_parent       New parent node of the subtree.
+         * @param   subtree_root     Subtree root node UID.
+         * @param   new_parent       New parent node of the subtree.
          * @return  true    if moving is successful
          *          false   if moving is unsuccessful due to problem in input.
          */
@@ -181,7 +181,7 @@ namespace dom_parser
         /**
          * @brief   Deletes the subtree with the given node as root.
          *          Deletes the single node if no child nodes present.
-         * @param   dom_parser::DOMnodeUID subtree_root Subtree root node.
+         * @param   subtree_root Subtree root node.
          */
         void deleteSubtree(DOMnodeUID subtree_root)
         {
@@ -208,7 +208,7 @@ namespace dom_parser
 
         /**
          * @brief   Returns std::vector of ancestors of the given node.
-         * @param   dom_parser::DOMnodeUID node     The node UID.
+         * @param   node     The node UID.
          */
         std::vector<DOMnodeUID> getAncestorList(DOMnodeUID node)
         {
