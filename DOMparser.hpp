@@ -307,6 +307,16 @@ namespace dom_parser
             else
                 return _process_output_for_node(0, indent, indentation, "\n");
         }
+
+        /**
+         * @brief   =operator overload
+         * */
+        DOMparser &operator=(const DOMparser &parser)
+        {
+            this->tree = parser.tree;
+            
+            return *this;
+        }
     };
 
 } // namespace dom_parser
