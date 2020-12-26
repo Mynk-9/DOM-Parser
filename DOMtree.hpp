@@ -225,11 +225,13 @@ namespace dom_parser
         /**
          * @brief   Operator overload for =
          * */
-        void operator=(const DOMtree &tree)
+        DOMtree &operator=(const DOMtree &tree)
         {
             this->nodes = tree.nodes;
             this->nodes_counter = tree.nodes_counter;
             this->vacantUIDs = tree.vacantUIDs;
+
+            return *this;
         }
     };
 
