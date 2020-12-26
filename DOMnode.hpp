@@ -167,19 +167,30 @@ namespace dom_parser
         }
 
         /**
-         * @brief   Operator overload for =operator
+         *    Operator overload for =operator removed.
+         *    Reason:
+         *      A situation may arise when the user would need to copy one
+         *      node to another. This would create the following problems:
+         *      1) If the user uses nodes vector in DOMtree, then they would
+         *          only be using =operator in shared_ptr and this would
+         *          result in multiple pointers to the same node. So if a 
+         *          change to one copy is made, similar changes would reflect
+         *          on another. This essentially means that a node is created
+         *          which mirrors the original node and which has incorrect 
+         *          connections with child nodes.
+         *      2) If user wants to copy node across trees, this should not 
+         *          be allowed for the sake of preventing errors as node UIDs
+         *          may not be consistent across different trees and hence,
+         *          connections of copied node might be inconsistent.
+         *      3) If one node is copied, then the original and copied nodes
+         *          would have same set of children nodes. Any node can have 
+         *          only one parent node, and since children nodes are not 
+         *          updated while copying, hence a copied node would have 
+         *          inconsistent connections which point to the children 
+         *          nodes but children nodes do not point back.
+         *    Considering the above reasons, =operator overload is removed from
+         *    DOMnode.
          */
-        void operator=(const DOMnode &node)
-        {
-            uid = node.uid;
-            parent = node.parent;
-            children = node.children;
-            tagAttributes = node.tagAttributes;
-            tagName = node.tagName;
-
-            innerDataNode = node.innerDataNode;
-            innerData = node.innerData;
-        }
     };
 
 }; // namespace dom_parser
