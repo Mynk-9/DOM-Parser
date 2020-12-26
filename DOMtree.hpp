@@ -227,9 +227,9 @@ namespace dom_parser
          * */
         void operator=(const DOMtree &tree)
         {
-            this->nodes = std::move(tree.nodes);
+            this->nodes = tree.nodes;
             this->nodes_counter = tree.nodes_counter;
-            this->vacantUIDs = std::move(tree.vacantUIDs);
+            this->vacantUIDs = tree.vacantUIDs;
         }
     };
 
