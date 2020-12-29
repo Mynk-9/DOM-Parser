@@ -1,0 +1,4 @@
+The testing files were sourced from the following:
+1) testing.xml      -- self
+2) part.xml         -- http://aiweb.cs.washington.edu/research/projects/xmltk/xmldata/www/repository.html#tpc-h
+3) ebay.xml         -- http://aiweb.cs.washington.edu/research/projects/xmltk/xmldata/www/repository.html#auctions

@@ -19,46 +19,22 @@ THE CODE HERE IS NOT DOCUMENTED.
 */
 
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <list>
-#include <stack>
+#include <vector>
 
-#include "DOMparser.hpp"
+#include "./test/test.hpp"
 
 using namespace std;
 
 int main()
 {
-    dom_parser::DOMtree tree("root");
-    dom_parser::DOMnodeUID uid;
+    vector<string> files = {"part.xml", "ebay.xml"};
+    string output_file = "./test/output.xml";
+    int select_file = 0;
 
-    uid = tree.addNode(0, "child1");
-    uid = tree.addNode(uid, "child1child1");
-    tree.getNode(uid).setAttribute("attr1", "val1");
-    uid = tree.getNode(uid).getParent();
-    uid = tree.getNode(uid).getParent(); // now at root node
-    uid = tree.addNode(uid, "child2");
-    tree.getNode(uid).setAttribute("abc", "xyz");
-    cout << tree.getNode(uid).getAttribute("abc") << "\n";
-
-    cout << "\nParser working...\n";
-    // dom_parser::DOMparser parser;
-    ifstream fin("sheet1.xml");
-    ofstream fout("output.xml");
-    string data = "", _data;
-    string _tag;
-    list<dom_parser::DOMnodeUID> _children;
-    dom_parser::DOMparser parser;
-    while (fin >> _data)
-        data += _data + " ";
-    // cout << data << "\n";
-    parser.loadTree(data);
-    fout << parser.getOutput(true) << flush;
-    cout << "done.\n";
-
-    fin.close();
-    fout.close();
+    loadTest.set_file("./test/" + files[select_file]);
+    loadTest.set_verbose(true);
+    long long ms = loadTest.run(output_file);
+    cout << "Completed Load Test on " << files[select_file] << " in " << ms << " milliseconds.\n";
 
     return 0;
 }
