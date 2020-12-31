@@ -1,5 +1,5 @@
 # DOM-Parser
- A small DOM(Document Object Model) Parsing library. C++17 is preferred.
+ A small DOM(Document Object Model) Parsing library. C++17 is preferred. Works on C++11 and above.
   
 Current capabilities:
  1) Scan markup code.
