@@ -1,4 +1,4 @@
 *.exe
-!testing.xml
+output.xml
 # vscode files
 /.vscode

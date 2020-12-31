@@ -27,9 +27,9 @@ using namespace std;
 
 int main()
 {
-    vector<string> files = {"part.xml", "ebay.xml"};
+    vector<string> files = {"testing.xml", "part.xml", "ebay.xml"};
     string output_file = "./test/output.xml";
-    int select_file = 0;
+    int select_file = 2;
 
     loadTest.set_file("./test/" + files[select_file]);
     loadTest.set_verbose(true);

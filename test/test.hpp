@@ -47,7 +47,7 @@ public:
         fin.open(file);
         string s;
         while (fin >> s)
-            data += s;
+            data += s + " ";
     }
     inline void set_verbose(bool _verbose)
     {
