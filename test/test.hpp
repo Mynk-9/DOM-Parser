@@ -22,6 +22,8 @@ THE CODE HERE IS NOT DOCUMENTED.
 #include <fstream>
 #include <chrono>
 
+#include <filesystem>
+
 #include "./../domparser/DOMparser.hpp"
 
 using namespace std;
@@ -29,9 +31,8 @@ using namespace std;
 struct loadTest
 {
 private:
-    ifstream fin;
+    filesystem::path file;
     ofstream fout;
-    string data;
     dom_parser::DOMparser parser;
     bool verbose = true;
 
@@ -42,12 +43,16 @@ private:
     }
 
 public:
-    void set_file(string file)
+    void set_file(string path)
     {
-        fin.open(file);
-        string s;
-        while (fin >> s)
-            data += s + " ";
+        try
+        {
+            file = filesystem::path(path);
+        }
+        catch (...)
+        {
+            debug_print("@set_file: problem with path");
+        }
     }
     inline void set_verbose(bool _verbose)
     {
@@ -55,23 +60,20 @@ public:
     }
     long long run(const string output_file)
     {
-        if (data == "")
-        {
-            debug_print("Error: File not set.");
-            return -1;
-        }
-
         // run test
         debug_print("Starting...");
+
         auto timer_start = chrono::steady_clock::now();
-        int e = parser.loadTree(data);
+        int e = parser.loadTree(file);
+        auto timer_stop = chrono::steady_clock::now();
+
         if (e != 0)
         {
             debug_print("Error: At line number: " + e);
             return -1;
         }
-        auto timer_stop = chrono::steady_clock::now();
-        debug_print("Loading done.");
+        else
+            debug_print("Loading done.");
         long long total_time = chrono::duration_cast<chrono::milliseconds>(timer_stop - timer_start).count();
 
         // print the output

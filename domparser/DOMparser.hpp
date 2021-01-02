@@ -20,6 +20,9 @@
 #include <map>
 #include <stack>
 
+#include <filesystem>
+#include <fstream>
+
 #include "DOMtree.hpp"
 
 namespace dom_parser
@@ -269,18 +272,46 @@ namespace dom_parser
         }
 
         /**
-         * @brief   Loads the tree from the data.
+         * @brief   Deprecated. Loads the tree from the data.
+         * @param   data    data provided for the tree to be loaded from
          * @return  -1  if data is empty
          *          n   number n > 0 denoting character number if there is error
          *              parsing at that line
          *          0   if parsed successfully
          */
-        inline int loadTree(const std::string &data)
+        [[deprecated]] inline int loadTree(const std::string &data)
         {
             if (data == "")
                 return -1;
             else
                 return _parser(data);
+        }
+
+        /**
+         * @brief   Loads the tree from the data.
+         * @param   data    data provided for the tree to be loaded from
+         * @return  -2  if file does not exist
+         *          -1  if data is empty
+         *          n   number n > 0 denoting character number if there is error
+         *              parsing at that line
+         *          0   if parsed successfully
+         */
+        inline int loadTree(std::filesystem::path path)
+        {
+            std::ifstream fin(path);
+            if (!fin.is_open())
+                return -2;
+
+            std::string buff;
+            std::string data = "";
+            while (fin >> buff)
+                data += buff + " ";
+            fin.close();
+
+            if (data == "")
+                return -1;
+            else
+                return _parser(std::move(data));
         }
 
         /**
@@ -314,7 +345,7 @@ namespace dom_parser
         DOMparser &operator=(const DOMparser &parser)
         {
             this->tree = parser.tree;
-            
+
             return *this;
         }
     };
