@@ -20,6 +20,7 @@
 #include <memory>
 #include <filesystem>
 #include <fstream>
+#include <iterator>
 
 namespace dom_parser
 {
@@ -44,6 +45,35 @@ namespace dom_parser
     public:
         char token;
         std::string value;
+    };
+
+    class lexer
+    {
+    private:
+        std::vector<std::shared_ptr<lexer_token>> token_buffer;
+        int token_buffer_pos = 0;
+        std::ifstream fin;
+        std::istreambuf_iterator<char> itr;
+        std::istreambuf_iterator<char> eof;
+
+    public:
+        lexer(std::filesystem::path path)
+        {
+            fin.open(path);
+            itr = std::istreambuf_iterator<char>(fin);
+        }
+
+        void generate_tokens()
+        {
+        }
+
+        lexer_token *next()
+        {
+            if (token_buffer_pos == 0)
+                generate_tokens();
+
+            return token_buffer[token_buffer_pos].get();
+        }
     };
 
 }; // namespace dom_parser
