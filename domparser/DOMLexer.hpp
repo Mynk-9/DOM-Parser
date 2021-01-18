@@ -16,10 +16,14 @@
 #define DOM_PARSER_DOM_LEXER
 
 #include <string>
+#include <vector>
+#include <memory>
+#include <filesystem>
+#include <fstream>
 
 namespace dom_parser
 {
-    struct lexer_tokens
+    struct lexer_token_values
     {
     public:
         const static char FILEBEG = 0; // file begin
@@ -33,6 +37,13 @@ namespace dom_parser
         const static char ATTRVALUE = 6; // attribute value
         const static char ATTRNOVAL = 7; // no value attribute
         const static char INNERDATA = 8; // inner data
+    };
+
+    struct lexer_token
+    {
+    public:
+        char token;
+        std::string value;
     };
 
 }; // namespace dom_parser
