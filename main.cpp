@@ -21,7 +21,8 @@ THE CODE HERE IS NOT DOCUMENTED.
 #include <iostream>
 #include <vector>
 
-#include "./test/test.hpp"
+// #include "./test/test.hpp"
+#include "./domparser/DOMLexer.hpp"
 
 using namespace std;
 
@@ -29,12 +30,14 @@ int main()
 {
     vector<string> files = {"testing.xml", "part.xml", "ebay.xml"};
     string output_file = "./test/output.xml";
-    int select_file = 2;
+    int select_file = 0;
 
-    loadTest.set_file("./test/" + files[select_file]);
-    loadTest.set_verbose(true);
-    long long ms = loadTest.run(output_file);
-    cout << "Completed Load Test on " << files[select_file] << " in " << ms << " milliseconds.\n";
+    // loadTest.set_file("./test/" + files[select_file]);
+    // loadTest.set_verbose(true);
+    // long long ms = loadTest.run(output_file);
+    // cout << "Completed Load Test on " << files[select_file] << " in " << ms << " milliseconds.\n";
+
+    dom_parser::lexer lexer("./test/" + files[select_file]);
 
     return 0;
 }
