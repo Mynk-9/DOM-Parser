@@ -22,9 +22,7 @@ THE CODE HERE IS NOT DOCUMENTED.
 #include <vector>
 
 // #include "./test/test.hpp"
-#define DOM_PARSER_DEBUG_MODE
 #include "./domparser/DOMLexer.hpp"
-#undef DOM_PARSER_DEBUG_MODE
 
 using namespace std;
 

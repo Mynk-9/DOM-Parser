@@ -16,7 +16,7 @@
 #define DOM_PARSER_DOM_LEXER
 
 #include <string>
-#include <vector>
+#include <queue>
 #include <memory>
 #include <filesystem>
 #include <fstream>
@@ -54,23 +54,15 @@ namespace dom_parser
     class lexer
     {
     private:
-        std::vector<std::shared_ptr<lexer_token>> token_buffer;
-        int token_buffer_pos = -1;
+        std::queue<std::shared_ptr<lexer_token>> token_buffer;
         std::ifstream fin;
 
         void buffer_add_token(char _token, std::string &&_value)
         {
-            ++token_buffer_pos;
-            if (token_buffer_pos >= token_buffer.size())
-                token_buffer.push_back(
-                    std::shared_ptr<lexer_token>(
-                        new lexer_token(
-                            _token, std::move(_value))));
-            else
-                token_buffer[token_buffer_pos] =
-                    std::shared_ptr<lexer_token>(
-                        new lexer_token(
-                            _token, std::move(_value)));
+            token_buffer.push(
+                std::shared_ptr<lexer_token>(
+                    new lexer_token(
+                        _token, std::move(_value))));
         }
 
         inline bool check_special_char(char c)
@@ -148,17 +140,19 @@ namespace dom_parser
         lexer(std::filesystem::path path)
         {
             fin.open(path);
-            token_buffer.push_back(
-                std::shared_ptr<lexer_token>(
-                    new lexer_token(lexer_token_values::T_FILEBEG, std::move(""))));
+            // token_buffer.push(
+            //     std::shared_ptr<lexer_token>(
+            //         new lexer_token(lexer_token_values::T_FILEBEG, std::move(""))));
+            buffer_add_token(lexer_token_values::T_FILEBEG, std::move(""));
         }
 
         lexer_token *next()
         {
-            if (token_buffer_pos <= 0)
+            token_buffer.pop();
+            if (token_buffer.size() == 0)
                 generate_tokens();
 
-            return token_buffer[token_buffer_pos--].get();
+            return token_buffer.front().get();
         }
     };
 
