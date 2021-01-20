@@ -23,27 +23,49 @@
 
 namespace dom_parser
 {
+
+    /**
+     *  @brief  Stores definitions of the lexer tokens as const static objects.
+     * */
     struct lexer_token_values
     {
     public:
-        const static char T_FILEBEG = '0'; // file begin
-        const static char T_FILEEND = '1'; // file end
+        // file begin
+        const static char T_FILEBEG = '0';
+        // file end
+        const static char T_FILEEND = '1';
 
-        const static char T_OPENTAG = '<'; // open tag
-        const static char T_CLOSTAG = '>'; // close tag
-        const static char T_BKSLASH = '/'; // a backward slash "/"
+        // open tag
+        const static char T_OPENTAG = '<';
+        // close tag
+        const static char T_CLOSTAG = '>';
+        // a backward slash "/"
+        const static char T_BKSLASH = '/';
 
-        const static char T_IDNTIFR = 'I';  // an identifier
-        const static char T_EQLSIGN = '=';  // an equal "=" sign
-        const static char T_DBLQUOT = '\"'; // a double quote `"`
-        const static char T_SINQUOT = '\''; // a single quote `'`
+        // an identifier
+        const static char T_IDNTIFR = 'I';
+        // an equal "=" sign
+        const static char T_EQLSIGN = '=';
+        // a double quote `"`
+        const static char T_DBLQUOT = '\"';
+        // a single quote `'`
+        const static char T_SINQUOT = '\'';
     };
 
+    /**
+     *  @brief Class representing a token.
+     * */
     class lexer_token
     {
     public:
         char token;
         std::string value;
+
+        /**
+         *  @brief Constructor
+         *  @param  _token  token taken from lexer_token_values
+         *  @param  _value  value associated with token
+         * */
         lexer_token(char _token, std::string &&_value)
         {
             token = _token;
@@ -51,12 +73,20 @@ namespace dom_parser
         }
     };
 
+    /**
+     *  @brief  Lexer class.
+     * */
     class lexer
     {
     private:
         std::queue<std::shared_ptr<lexer_token>> token_buffer;
         std::ifstream fin;
 
+        /**
+         *  @brief  Adds token to token_buffer
+         *  @param  _token  token taken from lexer_token_values
+         *  @param  _value  value associated with token
+         * */
         void buffer_add_token(char _token, std::string &&_value)
         {
             token_buffer.push(
@@ -65,16 +95,23 @@ namespace dom_parser
                         _token, std::move(_value))));
         }
 
+        /**
+         *  @brief  Checks if provided char is one of the chars which are 
+         *          represented by tokens.
+         * */
         inline bool check_special_char(char c)
         {
             return (c == '<' || c == '>' || c == '/' ||
                     c == '=' || c == '\"' || c == '\'');
         }
 
+        /**
+         *  @brief  Generates tokens for the next input from file
+         * */
         void generate_tokens()
         {
             std::string buff;
-            if (fin >> buff)
+            if (fin >> buff) // if input successful
             {
 #ifdef DOM_PARSER_DEBUG_MODE
                 std::cout << "\n\t\t buffer=" << buff << "\n";
@@ -115,7 +152,7 @@ namespace dom_parser
                             ++i;
                             if (check_special_char(*i))
                             {
-                                --i;
+                                --i; // --i because for-loop would ++i anyway
                                 break;
                             }
                         }
@@ -124,28 +161,33 @@ namespace dom_parser
 
                     buffer_add_token(token_name, std::move(token_value));
 
-                    if (i == buff.end())
-                        break;
+                    if (i == buff.end()) // if buffer end has already reached then terminate the
+                        break;           // loop otherwise i would be incremented further end()
                 }
             }
-            else
+            else // file finished
             {
                 buffer_add_token(lexer_token_values::T_FILEEND, std::move(""));
             }
         }
 
     public:
+        // Deleted default constructor
         lexer() = delete;
 
+        /**
+         *  @brief  Constructor
+         *  @param  path    path of the file which is to be scanned.
+         * */
         lexer(std::filesystem::path path)
         {
             fin.open(path);
-            // token_buffer.push(
-            //     std::shared_ptr<lexer_token>(
-            //         new lexer_token(lexer_token_values::T_FILEBEG, std::move(""))));
             buffer_add_token(lexer_token_values::T_FILEBEG, std::move(""));
         }
 
+        /**
+         *  @brief  Returns the pointer to the next token from the token buffer.
+         * */
         lexer_token *next()
         {
             token_buffer.pop();
