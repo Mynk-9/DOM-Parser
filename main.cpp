@@ -22,7 +22,9 @@ THE CODE HERE IS NOT DOCUMENTED.
 #include <vector>
 
 // #include "./test/test.hpp"
+#define DOM_PARSER_DEBUG_MODE
 #include "./domparser/DOMLexer.hpp"
+#undef DOM_PARSER_DEBUG_MODE
 
 using namespace std;
 
@@ -38,6 +40,17 @@ int main()
     // cout << "Completed Load Test on " << files[select_file] << " in " << ms << " milliseconds.\n";
 
     dom_parser::lexer lexer("./test/" + files[select_file]);
+    int _cnt = 1;
+    dom_parser::lexer_token *x = lexer.next();
+    while (x->token != dom_parser::lexer_token_values::T_FILEEND)
+    {
+        auto token = x->token;
+        auto value = x->value;
+
+        std::cout << "\t" << _cnt++ << " TOKEN: " << token << " "
+                  << "VALUE: " << value << "\n";
+        x = lexer.next();
+    }
 
     return 0;
 }

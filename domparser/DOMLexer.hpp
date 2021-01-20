@@ -55,8 +55,23 @@ namespace dom_parser
     {
     private:
         std::vector<std::shared_ptr<lexer_token>> token_buffer;
-        int token_buffer_pos = 0;
+        int token_buffer_pos = -1;
         std::ifstream fin;
+
+        void buffer_add_token(char _token, std::string &&_value)
+        {
+            ++token_buffer_pos;
+            if (token_buffer_pos >= token_buffer.size())
+                token_buffer.push_back(
+                    std::shared_ptr<lexer_token>(
+                        new lexer_token(
+                            _token, std::move(_value))));
+            else
+                token_buffer[token_buffer_pos] =
+                    std::shared_ptr<lexer_token>(
+                        new lexer_token(
+                            _token, std::move(_value)));
+        }
 
         inline bool check_special_char(char c)
         {
@@ -67,9 +82,11 @@ namespace dom_parser
         void generate_tokens()
         {
             std::string buff;
-            while (fin >> buff)
+            if (fin >> buff)
             {
+#ifdef DOM_PARSER_DEBUG_MODE
                 std::cout << "\n\t\t buffer=" << buff << "\n";
+#endif
                 for (auto i = buff.begin(); i != buff.end(); ++i)
                 {
                     std::string token_value;
@@ -100,7 +117,9 @@ namespace dom_parser
                         while (i != buff.end())
                         {
                             token_value += *i;
+#ifdef DOM_PARSER_DEBUG_MODE
                             std::cout << "\n\tdebug: token_value: " << token_value << "\n";
+#endif
                             ++i;
                             if (check_special_char(*i))
                             {
@@ -111,23 +130,15 @@ namespace dom_parser
                         break;
                     }
 
-                    token_buffer.push_back(
-                        std::shared_ptr<lexer_token>(
-                            new lexer_token(token_name, std::move(token_value))));
+                    buffer_add_token(token_name, std::move(token_value));
 
                     if (i == buff.end())
                         break;
                 }
             }
-
-            int _cnt = 1;
-            for (auto i : token_buffer)
+            else
             {
-                auto token = (*i.get()).token;
-                auto value = (*i.get()).value;
-
-                std::cout << "\t" << _cnt++ << " TOKEN: " << token << " "
-                          << "VALUE: " << value << "\n";
+                buffer_add_token(lexer_token_values::T_FILEEND, std::move(""));
             }
         }
 
@@ -137,15 +148,17 @@ namespace dom_parser
         lexer(std::filesystem::path path)
         {
             fin.open(path);
-            generate_tokens();
+            token_buffer.push_back(
+                std::shared_ptr<lexer_token>(
+                    new lexer_token(lexer_token_values::T_FILEBEG, std::move(""))));
         }
 
         lexer_token *next()
         {
-            if (token_buffer_pos == 0)
+            if (token_buffer_pos <= 0)
                 generate_tokens();
 
-            return token_buffer[token_buffer_pos].get();
+            return token_buffer[token_buffer_pos--].get();
         }
     };
 
