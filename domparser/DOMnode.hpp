@@ -85,6 +85,28 @@ namespace dom_parser
         }
 
         /**
+         * @brief   Sets attributes from the std::map provided
+         *          which has pairs like {attribute, value}.
+         *          Previous attributes will be cleared.
+         * @param   attributes  attributes to be set
+         */
+        inline void setAttributes(const std::map<std::string, std::string> &attributes)
+        {
+            tagAttributes = attributes;
+        }
+
+        /**
+         * @brief   Sets attributes from the rvalue std::map provided
+         *          which has pairs like {attribute, value}.
+         *          Previous attributes will be cleared.
+         * @param   attributes  attributes to be set
+         */
+        inline void setAttributes(std::map<std::string, std::string> &&attributes)
+        {
+            tagAttributes.swap(attributes);
+        }
+
+        /**
          * @brief   Gets the value of the said attribute. Returns
          *          empty string if the attribute does not exist.
          * @param   attribute   Name of the attribute

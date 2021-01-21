@@ -23,6 +23,7 @@
 #include <filesystem>
 #include <fstream>
 
+#include "DOMLexer.hpp"
 #include "DOMtree.hpp"
 
 namespace dom_parser
@@ -129,6 +130,111 @@ namespace dom_parser
         }
 
         /**
+         * @brief   loads tree from the data
+         */
+        int _parser(std::filesystem::path file)
+        {
+            lexer _lexer(file);
+            std::stack<DOMnodeUID> element_stack;
+            auto _T = _lexer.next();
+
+            if (_T->token != lexer_token_values::T_OPENTAG)
+                return -2; // root node required, error
+
+            // scan root node
+            {
+                DOMnodeUID uid = 0; // for root
+                std::string tag_name;
+                std::map<std::string, std::string> attributes;
+
+                int res = _data_scan_tag(_lexer, tag_name, attributes);
+                if (res != 1)
+                    return -2;
+
+                DOMtree _tree(tag_name);
+                tree = _tree;
+                element_stack.push(uid);
+                tree.getNode(uid).setAttributes(std::move(attributes));
+            }
+            _T = _lexer.next();
+
+            while (_T->token != lexer_token_values::T_FILEEND)
+            {
+                std::string tag_name;
+                std::map<std::string, std::string> attributes;
+                DOMnodeUID uid;
+
+                if (_T->token == lexer_token_values::T_OPENTAG) // read tag
+                {
+                    int res = _data_scan_tag(_lexer, tag_name, attributes);
+
+#ifdef DOM_PARSER_DEBUG_MODE
+                    std::cout << "\n\tdebug: PARSER: TAG: " << tag_name
+                              << "ATTRIBUTES:";
+                    for (const auto &attr : attributes)
+                    {
+                        std::cout << "\n\t\t" << attr.first
+                                  << "=\"" << attr.second << "\"\n";
+                    }
+#endif
+
+                    switch (res)
+                    {
+                    case 0: // fail
+#ifdef DOM_PARSER_DEBUG_MODE
+                        std::cout << "\n\tdebug: PARSER: fail"
+                                  << "\n";
+#endif
+                        return -2;
+                    case -1: // closing tag
+#ifdef DOM_PARSER_DEBUG_MODE
+                        std::cout << "\n\tdebug: PARSER: closing tag"
+                                  << "\n";
+#endif
+                        element_stack.pop();
+                        break;
+                    case 1: // success
+#ifdef DOM_PARSER_DEBUG_MODE
+                        std::cout << "\n\tdebug: PARSER: success"
+                                  << "\n";
+#endif
+                        uid = tree.addNode(element_stack.top(), tag_name);
+                        element_stack.push(uid);
+                        tree.getNode(uid).setAttributes(std::move(attributes));
+                        break;
+                    case -2: // self closing tag
+#ifdef DOM_PARSER_DEBUG_MODE
+                        std::cout << "\n\tdebug: PARSER: self closing tag"
+                                  << "\n";
+#endif
+                        uid = tree.addNode(element_stack.top(), tag_name);
+                        tree.getNode(uid).setAttributes(std::move(attributes));
+                        break;
+                    }
+
+                    _T = _lexer.next();
+                }
+                else // read innerData
+                {
+#ifdef DOM_PARSER_DEBUG_MODE
+                    std::cout << "\n\tdebug: PARSER: innerData"
+                              << "\n";
+#endif
+                    std::string innerData = "";
+                    while (_T->token != lexer_token_values::T_OPENTAG)
+                    {
+                        innerData += _T->value + " ";
+                        _T = _lexer.next();
+                    }
+                    innerData.erase(innerData.length() - 1, 1); // trim the last space
+                    tree.addInnerDataNode(element_stack.top(), innerData);
+                }
+            }
+
+            return 0;
+        }
+
+        /**
          * @brief   scans tag data
          * @return  0   fail
          *          1   success
@@ -207,6 +313,118 @@ namespace dom_parser
                 attributes[attribute] = value;
             }
             return 1;
+        }
+
+        /**
+         * @brief   scans tag data
+         * @return  0   fail
+         *          1   success
+         *          -1  closing tag
+         *          -2  self closing tag
+         * */
+        int _data_scan_tag(lexer &_lexer,
+                           std::string &tag_name,
+                           std::map<std::string, std::string> &attributes)
+        {
+            auto _T = _lexer.next();
+            // everytime we use lexer::next() we will check for file-end token
+            // if we get abrupt file end, error value will be returned
+
+            switch (_T->token)
+            {
+            case lexer_token_values::T_FILEEND: // found file end
+                return 0;
+
+            case lexer_token_values::T_BKSLASH: // closing tag
+                _T = _lexer.next();
+                if (_T->token != lexer_token_values::T_IDNTIFR)
+                    return 0;
+                _T = _lexer.next();
+                if (_T->token != lexer_token_values::T_CLOSTAG)
+                    return 0;
+                return -1;
+
+            case lexer_token_values::T_IDNTIFR: // found identifier
+
+                tag_name = _T->value; // set tagname
+
+                _T = _lexer.next();
+                if (_T->token == lexer_token_values::T_FILEEND)
+                    return 0;
+
+                // scan attributes till closing tag
+                while (_T->token != lexer_token_values::T_CLOSTAG &&
+                       _T->token != lexer_token_values::T_BKSLASH)
+                {
+                    // error: not identifier
+                    if (_T->token != lexer_token_values::T_IDNTIFR)
+                        return 0;
+
+                    std::string attribute, value;
+                    // get attribute name
+                    attribute = _T->value;
+
+                    // check next token for equal sign
+                    _T = _lexer.next();
+                    // either token should be equal sign or an identifier or > or /
+                    // > for tag closing, and / for /> type tag closing
+                    // otherwise error
+                    if (_T->token == lexer_token_values::T_IDNTIFR ||
+                        _T->token == lexer_token_values::T_BKSLASH ||
+                        _T->token == lexer_token_values::T_CLOSTAG) // no value attribute
+                    {
+                        attributes[attribute] = "";
+                        continue;
+                    }
+                    else if (_T->token != lexer_token_values::T_EQLSIGN) // error
+                        return 0;
+
+                    // scan attribute value
+                    // next token is either double/single quote or an identifier
+                    _T = _lexer.next();
+                    if (_T->token == lexer_token_values::T_IDNTIFR) // identifier
+                    {
+                        attributes[attribute] = _T->value;
+                    }
+                    else if (_T->token == lexer_token_values::T_DBLQUOT ||
+                             _T->token == lexer_token_values::T_SINQUOT) // quote
+                    {
+                        auto T_QUOTE = _T->token;
+                        _T = _lexer.next();
+                        // scan till we encounter that quote or file-end
+                        while (_T->token != T_QUOTE)
+                        {
+                            if (_T->token == lexer_token_values::T_FILEEND)
+                                return 0;
+                            value += _T->value + " ";
+
+                            _T = _lexer.next();
+                        }
+                        value.erase(value.length() - 1, 1); // trim the last space
+                        attributes[attribute] = value;
+                    }
+                    else
+                        return 0;
+
+                    _T = _lexer.next(); // next token
+                }
+
+                // check if element opening tag or self closing tag
+                if (_T->token == lexer_token_values::T_BKSLASH)
+                {
+                    _T = _lexer.next();
+                    if (_T->token == lexer_token_values::T_CLOSTAG)
+                        return -2; // self closing
+                    else
+                        return 0; // error
+                }
+                else if (_T->token == lexer_token_values::T_CLOSTAG)
+                    return 1; // success
+                else
+                    return 0; // error
+            }
+
+            return 0;
         }
 
         /**
@@ -296,7 +514,7 @@ namespace dom_parser
          *              parsing at that line
          *          0   if parsed successfully
          */
-        inline int loadTree(std::filesystem::path path)
+        inline int loadTree_primitive(std::filesystem::path path)
         {
             std::ifstream fin(path);
             if (!fin.is_open())
@@ -312,6 +530,17 @@ namespace dom_parser
                 return -1;
             else
                 return _parser(std::move(data));
+        }
+
+        /**
+         * @brief   Loads the tree from the data utilisizing a tokenizer/lexer.
+         * @param   data    data provided for the tree to be loaded from
+         * @return  -2  error
+         *          0   if parsed successfully
+         */
+        inline int loadTree(std::filesystem::path path)
+        {
+            return _parser(path);
         }
 
         /**
