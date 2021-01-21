@@ -122,21 +122,27 @@ namespace dom_parser
                     {
                     case '<':
                         token_name = lexer_token_values::T_OPENTAG;
+                        token_value = token_name;
                         break;
                     case '>':
                         token_name = lexer_token_values::T_CLOSTAG;
+                        token_value = token_name;
                         break;
                     case '/':
                         token_name = lexer_token_values::T_BKSLASH;
+                        token_value = token_name;
                         break;
                     case '=':
                         token_name = lexer_token_values::T_EQLSIGN;
+                        token_value = token_name;
                         break;
                     case '\"':
                         token_name = lexer_token_values::T_DBLQUOT;
+                        token_value = token_name;
                         break;
                     case '\'':
                         token_name = lexer_token_values::T_SINQUOT;
+                        token_value = token_name;
                         break;
                     default:
                         token_name = lexer_token_values::T_IDNTIFR;
