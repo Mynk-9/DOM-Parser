@@ -113,9 +113,6 @@ namespace dom_parser
             std::string buff;
             if (fin >> buff) // if input successful
             {
-#ifdef DOM_PARSER_DEBUG_MODE
-                std::cout << "\n\t\t buffer=" << buff << "\n";
-#endif
                 for (auto i = buff.begin(); i != buff.end(); ++i)
                 {
                     std::string token_value;
@@ -146,9 +143,6 @@ namespace dom_parser
                         while (i != buff.end())
                         {
                             token_value += *i;
-#ifdef DOM_PARSER_DEBUG_MODE
-                            std::cout << "\n\tdebug: token_value: " << token_value << "\n";
-#endif
                             ++i;
                             if (check_special_char(*i))
                             {
@@ -194,6 +188,11 @@ namespace dom_parser
             if (token_buffer.size() == 0)
                 generate_tokens();
 
+#ifdef DOM_PARSER_DEBUG_MODE
+            std::cout << "\n\tdebug: LEXER: token: "
+                      << token_buffer.front().get()->token << " value: "
+                      << token_buffer.front().get()->value << "\n";
+#endif
             return token_buffer.front().get();
         }
     };

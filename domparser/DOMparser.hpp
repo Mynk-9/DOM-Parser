@@ -23,6 +23,7 @@
 #include <filesystem>
 #include <fstream>
 
+#include "DOMLexer.hpp"
 #include "DOMtree.hpp"
 
 namespace dom_parser
@@ -254,6 +255,118 @@ namespace dom_parser
             }
 
             return s;
+        }
+
+        /**
+         * @brief   scans tag data
+         * @return  0   fail
+         *          1   success
+         *          -1  closing tag
+         *          -2  self closing tag
+         * */
+        int _data_scan_tag(lexer &_lexer,
+                           std::string &tag_name,
+                           std::map<std::string, std::string> &attributes)
+        {
+            auto _T = _lexer.next();
+            // everytime we use lexer::next() we will check for file-end token
+            // if we get abrupt file end, error value will be returned
+
+            switch (_T->token)
+            {
+            case lexer_token_values::T_FILEEND: // found file end
+                return 0;
+
+            case lexer_token_values::T_BKSLASH: // closing tag
+                _T = _lexer.next();
+                if (_T->token != lexer_token_values::T_IDNTIFR)
+                    return 0;
+                _T = _lexer.next();
+                if (_T->token != lexer_token_values::T_CLOSTAG)
+                    return 0;
+                return -1;
+
+            case lexer_token_values::T_IDNTIFR: // found identifier
+
+                tag_name = _T->value; // set tagname
+
+                _T = _lexer.next();
+                if (_T->token == lexer_token_values::T_FILEEND)
+                    return 0;
+
+                // scan attributes till closing tag
+                while (_T->token != lexer_token_values::T_CLOSTAG &&
+                       _T->token != lexer_token_values::T_BKSLASH)
+                {
+                    // error: not identifier
+                    if (_T->token != lexer_token_values::T_IDNTIFR)
+                        return 0;
+
+                    std::string attribute, value;
+                    // get attribute name
+                    attribute = _T->value;
+
+                    // check next token for equal sign
+                    _T = _lexer.next();
+                    // either token should be equal sign or an identifier or > or /
+                    // > for tag closing, and / for /> type tag closing
+                    // otherwise error
+                    if (_T->token == lexer_token_values::T_IDNTIFR ||
+                        _T->token == lexer_token_values::T_BKSLASH ||
+                        _T->token == lexer_token_values::T_CLOSTAG) // no value attribute
+                    {
+                        attributes[attribute] = "";
+                        continue;
+                    }
+                    else if (_T->token != lexer_token_values::T_EQLSIGN) // error
+                        return 0;
+
+                    // scan attribute value
+                    // next token is either double/single quote or an identifier
+                    _T = _lexer.next();
+                    if (_T->token == lexer_token_values::T_IDNTIFR) // identifier
+                    {
+                        attributes[attribute] = _T->value;
+                    }
+                    else if (_T->token == lexer_token_values::T_DBLQUOT ||
+                             _T->token == lexer_token_values::T_SINQUOT) // quote
+                    {
+                        auto T_QUOTE = _T->token;
+                        _T = _lexer.next();
+                        // scan till we encounter that quote or file-end
+                        while (_T->token != T_QUOTE)
+                        {
+                            if (_T->token == lexer_token_values::T_FILEEND)
+                                return 0;
+                            value += _T->value + " ";
+
+                            _T = _lexer.next();
+                        }
+                        value.erase(value.length() - 1, 1); // trim the last space
+                        attributes[attribute] = value;
+                    }
+                    else
+                        return 0;
+
+                    _T = _lexer.next(); // next token
+                }
+
+                // check if element opening tag or self closing tag
+                if (_T->token == lexer_token_values::T_BKSLASH)
+                {
+                    _T = _lexer.next();
+                    if (_T->token == lexer_token_values::T_CLOSTAG)
+                        return -2; // self closing
+                    else
+                        return 0; // error
+                }
+                else if (_T->token == lexer_token_values::T_CLOSTAG)
+                    return 1; // success
+                else
+                    return 0; // error
+            }
+
+            return 0;
         }
 
     public:

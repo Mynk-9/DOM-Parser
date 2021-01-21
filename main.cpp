@@ -21,8 +21,9 @@ THE CODE HERE IS NOT DOCUMENTED.
 #include <iostream>
 #include <vector>
 
-// #include "./test/test.hpp"
-#include "./domparser/DOMLexer.hpp"
+#define DOM_PARSER_DEBUG_MODE
+#include "./test/test.hpp"
+#undef DOM_PARSER_DEBUG_MODE
 
 using namespace std;
 
@@ -32,23 +33,10 @@ int main()
     string output_file = "./test/output.xml";
     int select_file = 0;
 
-    // loadTest.set_file("./test/" + files[select_file]);
-    // loadTest.set_verbose(true);
-    // long long ms = loadTest.run(output_file);
-    // cout << "Completed Load Test on " << files[select_file] << " in " << ms << " milliseconds.\n";
-
-    dom_parser::lexer lexer("./test/" + files[select_file]);
-    int _cnt = 1;
-    dom_parser::lexer_token *x = lexer.next();
-    while (x->token != dom_parser::lexer_token_values::T_FILEEND)
-    {
-        auto token = x->token;
-        auto value = x->value;
-
-        std::cout << "\t" << _cnt++ << " TOKEN: " << token << " "
-                  << "VALUE: " << value << "\n";
-        x = lexer.next();
-    }
+    loadTest.set_file("./test/" + files[select_file]);
+    loadTest.set_verbose(true);
+    long long ms = loadTest.run(output_file);
+    cout << "Completed Load Test on " << files[select_file] << " in " << ms << " milliseconds.\n";
 
     return 0;
 }

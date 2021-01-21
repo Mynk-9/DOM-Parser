@@ -67,6 +67,9 @@ public:
         int e = parser.loadTree(file);
         auto timer_stop = chrono::steady_clock::now();
 
+#ifdef DOM_PARSER_DEBUG_MODE
+        cout << "\n\tPARSER RETURN VALUE: " << e << "\n";
+#endif
         if (e != 0)
         {
             debug_print("Error: At line number: " + e);
