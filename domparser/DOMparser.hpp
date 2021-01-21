@@ -130,6 +130,114 @@ namespace dom_parser
         }
 
         /**
+         * @brief   loads tree from the data
+         */
+        int _parser(std::filesystem::path file)
+        {
+            lexer _lexer(file);
+            std::stack<DOMnodeUID> element_stack;
+            auto _T = _lexer.next();
+
+            if (_T->token != lexer_token_values::T_OPENTAG)
+                return -2; // root node required, error
+
+            // scan root node
+            {
+                DOMnodeUID uid = 0; // for root
+                std::string tag_name;
+                std::map<std::string, std::string> attributes;
+
+                int res = _data_scan_tag(_lexer, tag_name, attributes);
+                if (res != 1)
+                    return -2;
+
+                DOMtree _tree(tag_name);
+                tree = _tree;
+                element_stack.push(uid);
+                for (auto const &attribute : attributes)
+                    tree.getNode(uid).setAttribute(attribute.first, attribute.second);
+            }
+            _T = _lexer.next();
+
+            while (_T->token != lexer_token_values::T_FILEEND)
+            {
+                std::string tag_name;
+                std::map<std::string, std::string> attributes;
+                DOMnodeUID uid;
+
+                if (_T->token == lexer_token_values::T_OPENTAG) // read tag
+                {
+                    int res = _data_scan_tag(_lexer, tag_name, attributes);
+
+#ifdef DOM_PARSER_DEBUG_MODE
+                    std::cout << "\n\tdebug: PARSER: TAG: " << tag_name
+                              << "ATTRIBUTES:";
+                    for (const auto &attr : attributes)
+                    {
+                        std::cout << "\n\t\t" << attr.first
+                                  << "=\"" << attr.second << "\"\n";
+                    }
+#endif
+
+                    switch (res)
+                    {
+                    case 0: // fail
+#ifdef DOM_PARSER_DEBUG_MODE
+                        std::cout << "\n\tdebug: PARSER: fail"
+                                  << "\n";
+#endif
+                        return -2;
+                    case -1: // closing tag
+#ifdef DOM_PARSER_DEBUG_MODE
+                        std::cout << "\n\tdebug: PARSER: closing tag"
+                                  << "\n";
+#endif
+                        element_stack.pop();
+                        break;
+                    case 1: // success
+#ifdef DOM_PARSER_DEBUG_MODE
+                        std::cout << "\n\tdebug: PARSER: success"
+                                  << "\n";
+#endif
+                        uid = tree.addNode(element_stack.top(), tag_name);
+                        element_stack.push(uid);
+                        for (auto const &attribute : attributes)
+                            tree.getNode(uid).setAttribute(attribute.first, attribute.second);
+                        break;
+                    case -2: // self closing tag
+#ifdef DOM_PARSER_DEBUG_MODE
+                        std::cout << "\n\tdebug: PARSER: self closing tag"
+                                  << "\n";
+#endif
+                        uid = tree.addNode(element_stack.top(), tag_name);
+                        for (auto const &attribute : attributes)
+                            tree.getNode(uid).setAttribute(attribute.first, attribute.second);
+                        break;
+                    }
+
+                    _T = _lexer.next();
+                }
+                else // read innerData
+                {
+#ifdef DOM_PARSER_DEBUG_MODE
+                    std::cout << "\n\tdebug: PARSER: innerData"
+                              << "\n";
+#endif
+                    std::string innerData = "";
+                    while (_T->token != lexer_token_values::T_OPENTAG)
+                    {
+                        innerData += _T->value + " ";
+                        _T = _lexer.next();
+                    }
+                    innerData.erase(innerData.length() - 1, 1); // trim the last space
+                    tree.addInnerDataNode(element_stack.top(), innerData);
+                }
+            }
+
+            return 0;
+        }
+
+        /**
          * @brief   scans tag data
          * @return  0   fail
          *          1   success
