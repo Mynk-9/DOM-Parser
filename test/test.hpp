@@ -35,6 +35,7 @@ private:
     ofstream fout;
     dom_parser::DOMparser parser;
     bool verbose = true;
+    bool use_primitive = false;
 
     inline void debug_print(string s)
     {
@@ -58,18 +59,24 @@ public:
     {
         verbose = _verbose;
     }
+    inline void set_primitive(bool _primitive)
+    {
+        use_primitive = _primitive;
+    }
     long long run(const string output_file)
     {
         // run test
         debug_print("Starting...");
 
         auto timer_start = chrono::steady_clock::now();
-        int e = parser.loadTree(file);
+        int e;
+        if (!use_primitive)
+            e = parser.loadTree(file);
+        else
+            e = parser.loadTree_primitive(file);
         auto timer_stop = chrono::steady_clock::now();
 
-#ifdef DOM_PARSER_DEBUG_MODE
-        cout << "\n\tPARSER RETURN VALUE: " << e << "\n";
-#endif
+        debug_print("PARSER RETURN VALUE: " + e);
         if (e != 0)
         {
             debug_print("Error: At line number: " + e);
