@@ -517,7 +517,7 @@ namespace dom_parser
          *              parsing at that line
          *          0   if parsed successfully
          */
-        inline int loadTree(std::filesystem::path path)
+        inline int loadTree_primitive(std::filesystem::path path)
         {
             std::ifstream fin(path);
             if (!fin.is_open())
