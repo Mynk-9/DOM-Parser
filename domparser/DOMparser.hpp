@@ -319,53 +319,6 @@ namespace dom_parser
         }
 
         /**
-         * @brief   Helper function, generates output for the tree.
-         * @param   _node       Initial node
-         * @param   indent      Indentation string
-         * @param   indentation Current indentation at the node
-         * @param   _newline    Char to be used as newline char
-         * */
-        std::string _process_output_for_node(DOMnodeUID _node, const std::string &indent,
-                                             std::string indentation, std::string _newline)
-        {
-            auto node = tree.getNode(_node);
-            std::string s;
-
-            // set indentation
-            s += indentation;
-
-            // check if node is innerData node
-            if (node.isInnerDataNode())
-            {
-                s += node.getInnerData() + _newline;
-                return s;
-            }
-
-            // opening and closing tags
-            s += "<" + node.getTagName();
-            for (auto i : node.getAllAttributes())
-            {
-                s += " " + i.first;
-                if (!i.second.empty())
-                    s += "=\"" + i.second + "\"";
-            }
-            if (node.getChildrenUID().empty()) // if no child nodes
-                s += " />" + _newline;         // closing tags
-            else
-            {
-                // close opening tag
-                s += ">" + _newline;
-                // add children nodes
-                for (auto i : node.getChildrenUID())
-                    s += _process_output_for_node(i, indent, indentation + indent, _newline);
-                // closing tag
-                s += indentation + "</" + node.getTagName() + ">" + _newline;
-            }
-
-            return s;
-        }
-
-        /**
          * @brief   scans tag data
          * @return  0   fail
          *          1   success
@@ -475,6 +428,53 @@ namespace dom_parser
             }
 
             return 0;
+        }
+
+        /**
+         * @brief   Helper function, generates output for the tree.
+         * @param   _node       Initial node
+         * @param   indent      Indentation string
+         * @param   indentation Current indentation at the node
+         * @param   _newline    Char to be used as newline char
+         * */
+        std::string _process_output_for_node(DOMnodeUID _node, const std::string &indent,
+                                             std::string indentation, std::string _newline)
+        {
+            auto node = tree.getNode(_node);
+            std::string s;
+
+            // set indentation
+            s += indentation;
+
+            // check if node is innerData node
+            if (node.isInnerDataNode())
+            {
+                s += node.getInnerData() + _newline;
+                return s;
+            }
+
+            // opening and closing tags
+            s += "<" + node.getTagName();
+            for (auto i : node.getAllAttributes())
+            {
+                s += " " + i.first;
+                if (!i.second.empty())
+                    s += "=\"" + i.second + "\"";
+            }
+            if (node.getChildrenUID().empty()) // if no child nodes
+                s += " />" + _newline;         // closing tags
+            else
+            {
+                // close opening tag
+                s += ">" + _newline;
+                // add children nodes
+                for (auto i : node.getChildrenUID())
+                    s += _process_output_for_node(i, indent, indentation + indent, _newline);
+                // closing tag
+                s += indentation + "</" + node.getTagName() + ">" + _newline;
+            }
+
+            return s;
         }
 
     public:
