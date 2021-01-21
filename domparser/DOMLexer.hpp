@@ -90,9 +90,10 @@ namespace dom_parser
         void buffer_add_token(char _token, std::string &&_value)
         {
             token_buffer.push(
-                std::shared_ptr<lexer_token>(
-                    new lexer_token(
-                        _token, std::move(_value))));
+                std::move(
+                    std::shared_ptr<lexer_token>(
+                        new lexer_token(
+                            _token, std::move(_value)))));
         }
 
         /**
