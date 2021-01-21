@@ -536,6 +536,17 @@ namespace dom_parser
         }
 
         /**
+         * @brief   Loads the tree from the data utilisizing a tokenizer/lexer.
+         * @param   data    data provided for the tree to be loaded from
+         * @return  -2  error
+         *          0   if parsed successfully
+         */
+        inline int loadTree(std::filesystem::path path)
+        {
+            return _parser(path);
+        }
+
+        /**
          * @brief   Returns the loaded tree else the tree is blank
          *          with only one node - root node with blank tag name.
          */
