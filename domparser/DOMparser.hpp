@@ -154,8 +154,7 @@ namespace dom_parser
                 DOMtree _tree(tag_name);
                 tree = _tree;
                 element_stack.push(uid);
-                for (auto const &attribute : attributes)
-                    tree.getNode(uid).setAttribute(attribute.first, attribute.second);
+                tree.getNode(uid).setAttributes(std::move(attributes));
             }
             _T = _lexer.next();
 
@@ -201,8 +200,7 @@ namespace dom_parser
 #endif
                         uid = tree.addNode(element_stack.top(), tag_name);
                         element_stack.push(uid);
-                        for (auto const &attribute : attributes)
-                            tree.getNode(uid).setAttribute(attribute.first, attribute.second);
+                        tree.getNode(uid).setAttributes(std::move(attributes));
                         break;
                     case -2: // self closing tag
 #ifdef DOM_PARSER_DEBUG_MODE
@@ -210,8 +208,7 @@ namespace dom_parser
                                   << "\n";
 #endif
                         uid = tree.addNode(element_stack.top(), tag_name);
-                        for (auto const &attribute : attributes)
-                            tree.getNode(uid).setAttribute(attribute.first, attribute.second);
+                        tree.getNode(uid).setAttributes(std::move(attributes));
                         break;
                     }
 
