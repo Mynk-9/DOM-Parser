@@ -38,9 +38,9 @@ namespace dom_parser
         DOMtree tree;
 
         /**
-         * @brief   loads tree from the data
+         * @brief   deprecated, loads tree from the data
          */
-        int _parser(const std::string &data)
+        [[deprecated]] int _parser(const std::string &data)
         {
             std::stack<DOMnodeUID> element_stack;
             auto i = data.begin();
@@ -239,14 +239,14 @@ namespace dom_parser
         }
 
         /**
-         * @brief   scans tag data
+         * @brief   deprecated, scans tag data
          * @return  0   fail
          *          1   success
          *          -1  closing tag
          *          -2  self closing tag
          * */
-        int _data_scan_tag(std::string::const_iterator &i, const std::string::const_iterator &end,
-                           std::string &tag, std::map<std::string, std::string> &attributes)
+        [[deprecated]] int _data_scan_tag(std::string::const_iterator &i, const std::string::const_iterator &end,
+                                          std::string &tag, std::map<std::string, std::string> &attributes)
         {
             if (*i != '<')
                 return 0;
@@ -485,10 +485,10 @@ namespace dom_parser
         DOMparser() {}
 
         /**
-         * @brief   Constructs the tree from the provided data.
+         * @brief   Deprecated. Constructs the tree from the provided data.
          * @param   data    the data
          */
-        DOMparser(const std::string &data)
+        [[deprecated]] DOMparser(const std::string &data)
         {
             _parser(data);
         }
@@ -518,7 +518,7 @@ namespace dom_parser
          *              parsing at that line
          *          0   if parsed successfully
          */
-        inline int loadTree_primitive(std::filesystem::path path)
+        [[deprecated]] inline int loadTree_primitive(std::filesystem::path path)
         {
             std::ifstream fin(path);
             if (!fin.is_open())
