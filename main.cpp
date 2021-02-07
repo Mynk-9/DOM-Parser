@@ -21,6 +21,10 @@ THE CODE HERE IS NOT DOCUMENTED.
 #include <iostream>
 #include <vector>
 
+/**
+ * Use the DOM_PARSER_DEBUG_MODE to get debug output in console.
+ * It would reduce output speed depending on the size of input file.
+ * */
 #define DOM_PARSER_DEBUG_MODE
 #include "./test/test.hpp"
 #undef DOM_PARSER_DEBUG_MODE

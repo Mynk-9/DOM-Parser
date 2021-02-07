@@ -23,6 +23,10 @@
 #include <filesystem>
 #include <fstream>
 
+#ifdef DOM_PARSER_DEBUG_MODE
+#include <iostream>
+#endif
+
 #include "DOMLexer.hpp"
 #include "DOMtree.hpp"
 
@@ -170,7 +174,7 @@ namespace dom_parser
 
 #ifdef DOM_PARSER_DEBUG_MODE
                     std::cout << "\n\tdebug: PARSER: TAG: " << tag_name
-                              << "ATTRIBUTES:";
+                              << " ATTRIBUTES:";
                     for (const auto &attr : attributes)
                     {
                         std::cout << "\n\t\t" << attr.first

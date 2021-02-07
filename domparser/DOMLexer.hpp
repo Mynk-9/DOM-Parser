@@ -21,6 +21,10 @@
 #include <filesystem>
 #include <fstream>
 
+#ifdef DOM_PARSER_DEBUG_MODE
+#include <iostream>
+#endif
+
 namespace dom_parser
 {
 
