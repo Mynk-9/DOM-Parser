@@ -81,6 +81,7 @@ namespace dom_parser
     private:
         std::queue<std::shared_ptr<lexer_token>> token_buffer;
         std::ifstream fin;
+        bool scan_inner_data = false;
 
         /**
          *  @brief  Adds token to token_buffer
@@ -123,10 +124,26 @@ namespace dom_parser
                     case '<':
                         token_name = lexer_token_values::T_OPENTAG;
                         token_value = token_name;
+
+#ifdef DOM_PARSER_DEBUG_MODE
+                        std::cout << "\n\tdebug: LEXER: "
+                                  << "set_scan_inner_data: TRUE\n";
+#endif
+                        scan_inner_data = false; // not scanning inner data
+                                                 // of node
+
                         break;
                     case '>':
                         token_name = lexer_token_values::T_CLOSTAG;
                         token_value = token_name;
+
+#ifdef DOM_PARSER_DEBUG_MODE
+                        std::cout << "\n\tdebug: LEXER: "
+                                  << "set_scan_inner_data: TRUE\n";
+#endif
+                        scan_inner_data = true; // might be scanning inner
+                                                // data of node
+
                         break;
                     case '/':
                         token_name = lexer_token_values::T_BKSLASH;
@@ -151,8 +168,15 @@ namespace dom_parser
                         {
                             token_value += *i;
                             ++i;
-                            if (check_special_char(*i))
+                            if ((!scan_inner_data && check_special_char(*i)) ||
+                                (scan_inner_data && *i == '<'))
                             {
+
+#ifdef DOM_PARSER_DEBUG_MODE
+                                std::cout << "\n\tdebug: LEXER: "
+                                          << "set_scan_inner_data: FALSE\n";
+#endif
+                                scan_inner_data = false;
                                 --i; // --i because for-loop would ++i anyway
                                 break;
                             }
@@ -203,7 +227,6 @@ namespace dom_parser
             return token_buffer.front().get();
         }
     };
-
 }; // namespace dom_parser
 
 #endif
