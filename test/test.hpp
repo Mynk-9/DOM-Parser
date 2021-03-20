@@ -48,7 +48,8 @@ public:
     {
         try
         {
-            file = filesystem::path(path);
+            file = filesystem::path(__FILE__).parent_path().append("..").append(path);
+            debug_print("@set_file: file set: " + file.string());
         }
         catch (...)
         {
@@ -63,8 +64,11 @@ public:
     {
         use_primitive = _primitive;
     }
-    long long run(const string output_file)
+    long long run(const string path)
     {
+        // setup output file
+        auto output_file = filesystem::path(__FILE__).parent_path().append("..").append(path);
+
         // run test
         debug_print("Starting...");
 
@@ -91,7 +95,7 @@ public:
         fout.open(output_file);
         fout << parser.getOutput();
         fout.close();
-        debug_print("Output is present in: " + output_file);
+        debug_print("Output is present in: " + output_file.string());
 
         return total_time;
     }
